@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#10151b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Somerville | Next Arrivals</title>
+<style>
+:root{color-scheme:dark;--bg:#10151b;--panel:#1d252e;--muted:#9aaaba;--ink:#f5f8fa;--line:#35414c;--green:#27b67a;--bus:#f1b94e}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}main{max-width:1200px;margin:auto;padding:clamp(16px,3vw,32px)}header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:24px}h1{font-size:clamp(25px,3.4vw,42px);margin:0;letter-spacing:-.04em}header .sub{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}.clock{font-size:clamp(19px,2.4vw,30px);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}.status{font-size:12px;color:var(--muted);text-align:right;margin-top:5px}.dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:5px}.groups{display:grid;gap:22px}.group h2{font-size:16px;color:#c3d0dc;text-transform:uppercase;letter-spacing:.12em;margin:0 0 11px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:17px;min-width:0}.row{display:flex;align-items:center;gap:10px}.pill{min-width:48px;text-align:center;padding:7px 9px;border-radius:9px;font-size:18px;font-weight:800;background:var(--bus);color:#15191c}.pill.train{background:var(--green);color:#071b13}.dest{font-weight:750;font-size:clamp(15px,1.8vw,20px);line-height:1.2;min-width:0}.stop{color:var(--muted);font-size:12px;margin-top:5px}.times{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:20px}.time{background:#2a3540;border-radius:10px;min-height:73px;display:flex;align-items:center;justify-content:center;flex-direction:column}.num{font-size:clamp(25px,3vw,39px);line-height:1;font-weight:800;font-variant-numeric:tabular-nums}.time:first-child .num{color:#69e0a2}.unit{font-size:11px;color:#becbd6;margin-top:6px}.empty{color:var(--muted);font-size:14px;padding:20px 0;text-align:center;grid-column:1/-1}.footer{margin:24px 0;color:var(--muted);font-size:12px;display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}button{font:inherit;color:#cfe8fd;background:#243644;border:1px solid #446079;border-radius:8px;padding:7px 10px;cursor:pointer}a{color:#cfe8fd}.error{color:#ffb5a7}.setup{background:#352b20;border:1px solid #665035;color:#ffe0b0;padding:12px;border-radius:10px;margin-bottom:15px;font-size:13px;display:none}@media(max-width:650px){.cards{grid-template-columns:1fr}.card{padding:15px}.times{margin-top:14px}.time{min-height:66px}}@media(min-width:1050px){.groups{grid-template-columns:1fr 1fr}.group:first-child{grid-column:1/-1}.group:first-child .cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body><main><header><div><div class="sub">Somerville · MBTA</div><h1>Next Arrivals</h1></div><div><div class="clock" id="clock">--:--</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"></div><div class="footer"><span>Live MBTA arrival predictions · updated every 30 sec · no schedules substituted</span><span><button id="retry">Refresh now</button> · <a href="https://www.mbta.com/" target="_blank" rel="noopener">MBTA</a></span></div></main>
+<script>
+'use strict';
+const API='https://api-v3.mbta.com';
+const specs=[
+ {route:'Green-E',group:'Green Line · Magoun Square',badge:'E',station:'Magoun Square',anchor:'place-mgngl',type:'train'},
+ {route:'80',group:'Medford Street · Bartlett',badge:'80',station:'Medford St / Bartlett St',find:'bartlett',type:'bus'},
+ {route:'89',group:'Broadway · Bartlett',badge:'89',station:'Broadway / Bartlett St',find:'bartlett',type:'bus'},
+ {route:'88',group:'Highland Avenue · Central',badge:'88',station:'Highland Ave / Central St',find:'central st',type:'bus'},
+ {route:'90',group:'Highland Avenue · Central',badge:'90',station:'Highland Ave / Central St',find:'central st',type:'bus'}
+];
+let metadata=new Map(),arrivals=new Map(),lastSuccess=0,inFlight=false;
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function request(path){const r=await fetch(API+path,{headers:{'Accept':'application/vnd.api+json'},cache:'no-store'});if(!r.ok)throw new Error('MBTA API: HTTP '+r.status);return r.json()}
+function distance(a,b){const dx=(a.latitude-b.latitude)*111000,dy=(a.longitude-b.longitude)*82000;return Math.hypot(dx,dy)}
+async function loadStops(spec){if(spec.anchor){spec.ids=[spec.anchor];return}
+ const u='/stops?'+new URLSearchParams({'filter[route]':spec.route,'page[limit]':'500'});
+ const response=await request(u);const stops=response.data.filter(x=>x.attributes?.latitude!=null);
+ // Find stop named for the user's intersection. Look for the opposite-side stop nearby.
+ const anchors=stops.filter(s=>s.attributes.name.toLowerCase().includes(spec.find));
+ if(!anchors.length){spec.ids=[];spec.problem='Intersection not found in current MBTA stop list';return}
+ const primary=anchors[0];let selected=anchors.slice();
+ if(selected.length<2){const nearby=stops.filter(x=>x.id!==primary.id).map(x=>({...x,meters:distance(primary.attributes,x.attributes)})).filter(x=>x.meters<=150).sort((a,b)=>a.meters-b.meters);if(nearby.length)selected.push(nearby[0])}
+ spec.ids=[...new Set(selected.map(s=>s.id))];spec.stopNames=selected.map(s=>s.attributes.name);
+}
+async function initialize(){
+ const results=await Promise.allSettled(specs.map(async(s)=>{const tasks=[loadStops(s),request('/routes/'+encodeURIComponent(s.route))];const [_,route]=await Promise.all(tasks);s.destinations=route.data.attributes.direction_destinations||[];}));
+ for(let i=0;i<results.length;i++)if(results[i].status==='rejected'){specs[i].problem=results[i].reason.message;specs[i].ids=specs[i].ids||[]}
+}
+function countdown(date){const seconds=(new Date(date).getTime()-Date.now())/1000;if(!Number.isFinite(seconds)||seconds < -35)return null;if(seconds<45)return 'Now';return String(Math.ceil(seconds/60))}
+function timeMarkup(items){const valid=items.map(x=>({raw:x,t:countdown(x)})).filter(x=>x.t!==null).slice(0,3);if(!valid.length)return '<div class="empty">No live predictions</div>';return valid.map(({t})=>`<div class="time"><div class="num">${t}</div><div class="unit">${t==='Now'?'arriving':'min'}</div></div>`).join('')}
+function render(){document.getElementById('clock').textContent=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'}).format(new Date());const root=document.getElementById('groups');const sections=new Map();for(const s of specs){if(!sections.has(s.group))sections.set(s.group,[]);sections.get(s.group).push(s)}let html='';for(const [title,rows]of sections){html+=`<section class="group"><h2>${escapeHTML(title)}</h2><div class="cards">`;for(const s of rows){for(let dir=0;dir<2;dir++){const key=s.route+':'+dir;const items=arrivals.get(key)||[];const destination=s.destinations?.[dir] || (s.type==='train'?(dir===0?'Heath Street / Boston':'Medford/Tufts'):'Direction '+(dir+1));html+=`<div class="card"><div class="row"><div class="pill ${s.type==='train'?'train':''}">${escapeHTML(s.badge)}</div><div><div class="dest">${escapeHTML(destination)}</div><div class="stop">${escapeHTML(s.station)}</div></div></div><div class="times">${s.problem?`<div class="empty error">${escapeHTML(s.problem)}</div>`:timeMarkup(items)}</div></div>`}}html+='</div></section>'}root.innerHTML=html;
+ const status=document.getElementById('status');status.innerHTML=lastSuccess?`<span class="dot"></span> Updated ${Math.max(0,Math.floor((Date.now()-lastSuccess)/1000))} sec ago`:'<span class="dot"></span> Connecting…';if(lastSuccess&&Date.now()-lastSuccess>120000)status.innerHTML='<span class="error">Connection stale · retrying</span>';
+}
+async function update(){if(inFlight)return;inFlight=true;try{
+ const stops=[...new Set(specs.flatMap(s=>s.ids||[]))];if(!stops.length)throw Error('No stops identified');
+ // Query each service separately; parent-station predictions are supported for Green Line.
+ const results=await Promise.allSettled(specs.map(async s=>{if(!s.ids?.length)return [];const params=new URLSearchParams({'filter[stop]':s.ids.join(','),'filter[route]':s.route,'page[limit]':'100'});const data=await request('/predictions?'+params);return data.data.map(p=>({route:s.route,dir:p.attributes.direction_id,time:p.attributes.arrival_time||p.attributes.departure_time})).filter(p=>p.time)}));
+ arrivals=new Map();results.forEach((r,i)=>{if(r.status==='fulfilled'){specs[i].problem=null;for(const p of r.value){const key=p.route+':'+p.dir;if(!arrivals.has(key))arrivals.set(key,[]);arrivals.get(key).push(p.time)}}else specs[i].problem=r.reason.message});for(const times of arrivals.values())times.sort((a,b)=>new Date(a)-new Date(b));lastSuccess=Date.now();
+ }catch(err){document.getElementById('status').textContent=err.message}finally{inFlight=false;render()}}
+document.getElementById('retry').addEventListener('click',update);render();initialize().then(update).catch(e=>{document.getElementById('status').textContent=e.message;render()});setInterval(render,15000);setInterval(update,30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});
+</script></body></html>
