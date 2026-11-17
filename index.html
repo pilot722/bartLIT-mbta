@@ -148,6 +148,51 @@ h1{font-size:38px}
 .green-overview,.cards{display:block}
 .bus-arrival{display:-webkit-flex;display:flex}
 @media(max-width:760px){.groups{display:block}.arrivals-column{width:100%;padding-right:0}.groups>.alert-panel{width:100%;margin-top:15px}header{margin-bottom:16px}h1{font-size:29px}.header-meta{min-width:150px}.header-meta .clock{font-size:24px}.header-meta .date{font-size:11px}}
+
+/* Spacious landscape iPad layout — Safari 10 compatible */
+@media (min-width:761px){
+  .arrivals-column{
+    width:43%;
+    -webkit-flex:0 0 43%;
+    flex:0 0 43%;
+    padding-right:16px;
+  }
+  .groups>.alert-panel{
+    width:57%;
+    -webkit-flex:0 0 57%;
+    flex:0 0 57%;
+  }
+}
+.arrivals-column .bus-arrival,
+.group:first-child .train-arrivals .bus-arrival {
+  padding:15px 17px;
+  gap:16px;
+  min-height:99px;
+}
+.arrivals-column .pill,
+.group:first-child .train-arrivals .pill.train {
+  -webkit-flex:0 0 auto;
+  flex:0 0 auto;
+  min-width:43px;
+}
+.arrivals-column .arrival-info {
+  min-width:0;
+  padding-left:3px;
+}
+.arrivals-column .arrival-info .arrival-stop{font-size:16px;line-height:1.28}
+.arrivals-column .arrival-info .stop{line-height:1.32;margin-top:5px}
+.arrivals-column .walk-note{margin-top:8px}
+.arrivals-column .count{min-width:57px;padding-left:10px}
+.arrivals-column .count .num{font-size:29px}
+.alert-panel .alert-heading{padding:17px 21px 14px}
+.alert-panel .alert-item{padding:15px 21px}
+.alert-panel .alert-head{line-height:1.45}
+.alert-panel .alert-more{padding:14px 21px}
+@media(max-width:760px){
+  .arrivals-column{width:100%;padding-right:0}
+  .groups>.alert-panel{width:100%}
+}
+
 </style>
 </head>
 <body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><div class="sub">Bartlett Street <span class="sub-dot">·</span> Somerville</div><h1>Arrivals</h1></div></div><div class="header-meta"><div class="date" id="date">—</div><div class="clock" id="clock">--:--</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div><div class="footer"><span>Live MBTA predictions · refreshed every 30 seconds · walking times are approximate</span><span><button id="retry">Refresh now</button> · <a href="https://www.mbta.com/" target="_blank" rel="noopener">MBTA</a></span></div></main>
@@ -268,8 +313,9 @@ function get(path) {
             case 1:
                 r = _a.sent();
                 if (!r.ok) {
-                    e = new Error('MBTA API HTTP ' + r.status);
+                    e = new Error('MBTA ' + path.split('?')[0] + ': HTTP ' + r.status);
                     e.status = r.status;
+                    e.endpoint = path.split('?')[0];
                     throw e;
                 }
                 return [2 /*return*/, r.json()];
@@ -306,8 +352,8 @@ function initialize() {
                     }
                     catch (e) { }
                     return [4 /*yield*/, Promise.all(__spreadArray([
-                            get('/stops?' + new URLSearchParams({ 'filter[route]': '88,90', 'page[limit]': '500' })),
-                            get('/stops?' + new URLSearchParams({ 'filter[route]': '89', 'page[limit]': '500' }))
+                            get('/stops?' + new URLSearchParams({ 'filter[route]': '88,90', 'page[limit]': '100' })),
+                            get('/stops?' + new URLSearchParams({ 'filter[route]': '89', 'page[limit]': '100' }))
                         ], __read(['88', '89', '90', 'Green-E'].map(function (r) { return get('/routes/' + r); })), false))];
                 case 1:
                     results = _b.sent();
@@ -386,7 +432,7 @@ function upcomingPanel() {
         return "<div class=\"alert-item\">\n     <div class=\"line-label\"><span class=\"line-dot\" style=\"background:".concat(lineColor(line), "\"></span>").concat(esc(a.branches || 'Subway'), "</div>\n     <div class=\"alert-date\">").concat(esc(alertDate(a.start))).concat(a.timeframe ? ' · ' + esc(compactText(a.timeframe, 55)) : '', "</div>\n     <div class=\"service-label\">").concat(esc(kind), "</div>\n     ").concat(segment ? "<div class=\"segment\"><span class=\"segment-label\">Out-of-service segment</span><strong>".concat(esc(compactText(segment, 170)), "</strong></div>") : '', "\n     <div class=\"alert-head\">").concat(esc(compactText(source, 220)), "</div>\n     ").concat(a.description ? "<details class=\"alert-details\"><summary>Full alert and affected stops</summary><p>".concat(esc(a.description), "</p></details>") : '', "\n   </div>");
     }).join('');
     if (!items) {
-        items = "<div class=\"alert-empty\">".concat(!alertsLoaded ? 'Checking upcoming subway service changes…' : alertsError ? 'Service updates are temporarily unavailable.' : 'No upcoming shuttle buses or subway suspensions reported in the next 30 days.', "</div>");
+        items = "<div class=\"alert-empty\">".concat(!alertsLoaded ? 'Checking upcoming subway service changes…' : alertsError ? 'Service updates unavailable: ' + esc(alertsError) : 'No upcoming shuttle buses or subway suspensions reported in the next 30 days.', "</div>");
     }
     return "<aside class=\"alert-panel\" aria-label=\"Upcoming subway service alerts\">\n  <div class=\"alert-heading\"><div class=\"alert-title\">Upcoming Service Alerts</div><div class=\"alert-sub\">Shuttles & suspensions \u00B7 next 30 days</div></div>\n  <div class=\"alert-list\">".concat(items, "</div>\n  ").concat(upcomingAlerts.length > 5 ? "<div class=\"alert-indicator\">Showing 5 of ".concat(upcomingAlerts.length, " scheduled changes</div>") : '', "\n  <div class=\"alert-more\"><a href=\"https://www.mbta.com/alerts/subway\" target=\"_blank\" rel=\"noopener\">View all MBTA subway alerts</a></div>\n </aside>");
 }
@@ -402,7 +448,7 @@ function updateAlerts() {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 3, 4, 5]);
-                    qs = new URLSearchParams({ 'filter[route]': 'Red,Orange,Blue,Green-B,Green-C,Green-D,Green-E', 'filter[lifecycle]': 'UPCOMING,ONGOING_UPCOMING', 'page[limit]': '100' });
+                    qs = new URLSearchParams({ 'filter[route]': 'Red,Orange,Blue,Green-B,Green-C,Green-D,Green-E', 'page[limit]': '100' });
                     return [4 /*yield*/, get('/alerts?' + qs)];
                 case 2:
                     result = _a.sent();
@@ -479,7 +525,7 @@ function update() {
                 case 1:
                     _p.trys.push([1, 3, 4, 5]);
                     stops = __spreadArray([], __read(new Set(__spreadArray([TRAIN.id], __read(targets.map(function (t) { return t.stop; })), false))), false);
-                    qs = new URLSearchParams({ 'filter[stop]': stops.join(','), 'filter[route]': 'Green-E,88,89,90', 'page[limit]': '300' });
+                    qs = new URLSearchParams({ 'filter[stop]': stops.join(','), 'filter[route]': 'Green-E,88,89,90', 'page[limit]': '100' });
                     return [4 /*yield*/, get('/predictions?' + qs)];
                 case 2:
                     json = _p.sent();
