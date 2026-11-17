@@ -255,8 +255,8 @@ header{margin:0 -22px 22px;padding:18px 22px}
 .alert-banner-wrap{padding:12px 14px 0;}
 .alert-banner{display:inline-block;padding:6px 12px;border-radius:3px;font-size:12px;line-height:1.2;color:#fff;font-weight:800;letter-spacing:.035em;}
 .alert-banner-wrap .alert-banner{margin:0 4px 4px 0;max-width:100%;}
-.alert-banner-wrap .alert-dates{background:#e5ebf0;color:#334b61;text-transform:none;}
-.alert-banner-wrap .alert-stops{background:#d5dfe8;color:#263d51;text-transform:none;}
+.alert-banner-wrap .alert-dates{background:#d5dfe8;color:#263d51;text-transform:none;}
+.alert-banner-wrap .alert-stops{background:#e5ebf0;color:#334b61;text-transform:none;}
 .alert-body{padding:10px 14px 14px;}
 .alert-panel .alert-head{line-height:1.42;}
 .alert-panel .alert-more{background:#fff;border-top:1px solid #d8e0e6;}
@@ -581,7 +581,16 @@ function goalHTML(goal) {
 function isActivePeriod(period, now) {
     return Date.parse(period.start) <= now && (!period.end || Date.parse(period.end) > now);
 }
-function alertDates(periods) {
+function alertDates(periods, header) {
+    var months = 'Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?';
+    var range = new RegExp('\\b(' + months + ')\\.?\\s+([0-9]{1,2})\\s*[–—-]\\s*(?:(' + months + ')\\.?\\s+)?([0-9]{1,2})\\b', 'i');
+    var stated = String(header || '').match(range);
+    if (stated) {
+        var startMonth = stated[1].slice(0, 3);
+        var endMonth = stated[3] ? stated[3].slice(0, 3) : startMonth;
+        return startMonth + ' ' + stated[2] + '–' + (startMonth === endMonth ? '' : endMonth + ' ') + stated[4];
+    }
+
     var formatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
     var labels = [];
     periods.forEach(function (period) {
@@ -599,8 +608,15 @@ function lineColor(line) {
 function affectedSegment(text) {
     // Only show a segment explicitly named in the MBTA alert; never infer station closures.
     var t = String(text || '').replace(/\s+/g, ' ').trim();
-    var match = t.match(/\bbetween\s+([^.!?;]{3,110}?)\s+and\s+([^.!?;,]{3,90}?)(?=\s+(?:from|on|starting|beginning|through|until|during|after|due to)\b|[,.!?;]|$)/i);
-    return match ? match[1].trim() + ' – ' + match[2].trim() : '';
+    // Preserve station abbreviations while finding the end of the disruption clause.
+    t = t.replace(/\bSt\.(?=\s+\S)/gi, function (abbreviation) {
+        return abbreviation.replace('.', '\u0001');
+    });
+    var match = t.match(/\b(?:no trains(?: will (?:run|operate))?|(?:shuttle )?buses (?:will )?replace (?:train )?service|(?:train )?service (?:will be |is )?suspended)\s+between\s+([^.!?;]+?)(?=\s+(?:from|on|starting|beginning|through|until|during|after|due to)\b|[.!?;]|$)/i);
+    if (!match)
+        return '';
+    var segment = match[1].trim().replace(/,$/, '').replace(/\u0001/g, '.');
+    return segment.replace(/\s+(?:and|&)\s+/i, ' – ');
 }
 function upcomingPanel() {
     var items = upcomingAlerts.slice(0, 5).map(function (a) {
@@ -665,7 +681,7 @@ function updateAlerts() {
                         if (greenBranches.length)
                             affectedLines.push('Green Line' + (greenBranches.length < 4 ? ' (' + greenBranches.join(', ') + ')' : ''));
                         var kinds = { SHUTTLE: 'Shuttle buses', SUSPENSION: 'Suspension' };
-                        return [{ start: periods[0].start, active: periods.some(function (period) { return isActivePeriod(period, now_1); }), dates: alertDates(periods), title: a.short_header || a.header || a.service_effect || 'Upcoming subway service change', fullTitle: a.header || a.short_header || '', description: a.description || '', timeframe: a.timeframe || '', effect: kinds[a.effect] || '', branches: affectedLines.join(' · ') || 'Subway', id: item.id }];
+                        return [{ start: periods[0].start, active: periods.some(function (period) { return isActivePeriod(period, now_1); }), dates: alertDates(periods, a.header || a.short_header), title: a.short_header || a.header || a.service_effect || 'Upcoming subway service change', fullTitle: a.header || a.short_header || '', description: a.description || '', timeframe: a.timeframe || '', effect: kinds[a.effect] || '', branches: affectedLines.join(' · ') || 'Subway', id: item.id }];
                     }).sort(function (a, b) { return Number(b.active) - Number(a.active) || Date.parse(a.start) - Date.parse(b.start); }).filter(function (a, i, array) { return array.findIndex(function (b) { return b.id === a.id; }) === i; });
                     alertsLoaded = true;
                     alertsError = '';
