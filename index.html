@@ -362,9 +362,22 @@ header .header-secondary{margin:4px 0 0;color:#cbdce9;font-size:12px;font-weight
 .arrivals-panel .green-group .train-arrivals .bus-arrival{background:transparent;border-bottom:0;}
 .arrivals-panel .green-group .train-arrivals .bus-arrival + .bus-arrival{border-top:3px solid #00843d;}
 .arrivals-panel .green-group .train-arrivals .arrival-stop{color:#000;font-size:18px;font-weight:800;}
+.alert-with-image{display:flex;align-items:flex-start;}
+.alert-with-image .alert-copy{flex:1 1 auto;min-width:0;}
+.alert-thumbnail{position:relative;align-self:stretch;flex:0 0 22%;max-width:148px;min-width:72px;min-height:60px;margin:9px 10px 9px 0;padding:2px;border:1px solid #9ab2c6;border-radius:4px;background:#fff;cursor:pointer;}
+.alert-thumbnail img{position:absolute;top:2px;left:2px;width:calc(100% - 4px);height:calc(100% - 4px);object-fit:contain;}
+.alert-image-viewer{position:fixed;z-index:20;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;background:rgba(10,23,36,.94);}
+.alert-image-viewer[hidden]{display:none;}
+.alert-image-viewer img{max-width:96vw;max-height:calc(100vh - 64px);width:auto;height:auto;}
+.alert-image-close{position:absolute;top:10px;right:12px;font-size:28px;line-height:1;background:#fff;color:#102e4b;}
+@media(max-width:480px){.alert-thumbnail{min-width:62px;}}
 </style>
 </head>
 <body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><h1 class="header-primary">34 Bartlett Street</h1><div class="header-secondary">Somerville</div></div></div><div class="header-meta"><div class="header-primary" id="clock">--:--</div><div class="header-secondary" id="date">—</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div></main>
+<div id="alert-image-viewer" class="alert-image-viewer" role="dialog" aria-modal="true" aria-label="Disruption image" hidden>
+<button id="alert-image-close" class="alert-image-close" type="button" aria-label="Close image">×</button>
+<img id="alert-image-full" alt="">
+</div>
 <script>
 /* Safari 10 compatibility helpers */
 if (!Number.isFinite) Number.isFinite=function(n){return typeof n==='number'&&isFinite(n);};
@@ -655,10 +668,13 @@ function upcomingPanel() {
         var stopTab = segment ? '<span class="alert-banner alert-stops">' + esc(segment) + '</span>' : '';
         var activeTint = { Red: '#fce9e8', Orange: '#fff0dc', Blue: '#e6eefb', Green: '#e5f3eb' };
         var cardStyle = a.active ? ' style="background-color:' + (activeTint[line] || '#edf1f5') + ';"' : '';
-        return '<div class="alert-item"' + cardStyle + '>' +
+        var image = typeof a.image === 'string' && /^https:\/\//i.test(a.image) ? a.image : '';
+        var alt = a.imageAlt || bannerLabel + ' disruption map';
+        var thumbnail = image ? '<button class="alert-thumbnail" type="button" aria-label="Enlarge disruption image"><img src="' +
+            esc(image) + '" alt="' + esc(alt) + '"></button>' : '';
+        return '<div class="alert-item' + (image ? ' alert-with-image' : '') + '"' + cardStyle + '><div class="alert-copy">' +
             '<div class="alert-banner-wrap"><span class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</span>' + dateTab + stopTab + activeTab + '</div>' +
-            '<div class="alert-body"><div class="alert-head">' + esc(bodyText) + '</div></div>' +
-            '</div>';
+            '<div class="alert-body"><div class="alert-head">' + esc(bodyText) + '</div></div></div>' + thumbnail + '</div>';
     }).join('');
     if (!items) {
         items = '<div class="alert-empty">' +
@@ -704,7 +720,7 @@ function updateAlerts() {
                         if (greenBranches.length)
                             affectedLines.push('Green Line' + (greenBranches.length < 4 ? ' (' + greenBranches.join(', ') + ')' : ''));
                         var kinds = { SHUTTLE: 'Shuttle buses', SUSPENSION: 'Suspension' };
-                        return [{ start: periods[0].start, active: periods.some(function (period) { return isActivePeriod(period, now_1); }), dates: alertDates(periods, a.header || a.short_header), title: a.short_header || a.header || a.service_effect || 'Upcoming subway service change', fullTitle: a.header || a.short_header || '', description: a.description || '', timeframe: a.timeframe || '', effect: kinds[a.effect] || '', branches: affectedLines.join(' · ') || 'Subway', id: item.id }];
+                        return [{ start: periods[0].start, active: periods.some(function (period) { return isActivePeriod(period, now_1); }), dates: alertDates(periods, a.header || a.short_header), title: a.short_header || a.header || a.service_effect || 'Upcoming subway service change', fullTitle: a.header || a.short_header || '', description: a.description || '', image: a.image, imageAlt: a.image_alternative_text, timeframe: a.timeframe || '', effect: kinds[a.effect] || '', branches: affectedLines.join(' · ') || 'Subway', id: item.id }];
                     }).sort(function (a, b) { return Number(b.active) - Number(a.active) || Date.parse(a.start) - Date.parse(b.start); }).filter(function (a, i, array) { return array.findIndex(function (b) { return b.id === a.id; }) === i; });
                     alertsLoaded = true;
                     alertsError = '';
@@ -869,6 +885,33 @@ function update() {
 render();
 initialize().then(update).catch(function (e) { setupError = e.message; render(); });
 updateAlerts();
+var openImageButton;
+function closeAlertImage() {
+    $('alert-image-viewer').hidden = true;
+    $('alert-image-full').removeAttribute('src');
+    if (openImageButton && document.documentElement.contains(openImageButton))
+        openImageButton.focus();
+    openImageButton = null;
+}
+$('groups').addEventListener('click', function (event) {
+    var button = event.target;
+    if (button.tagName === 'IMG') button = button.parentNode;
+    if (!button.classList || !button.classList.contains('alert-thumbnail')) return;
+    var thumbnail = button.querySelector('img');
+    openImageButton = button;
+    $('alert-image-full').src = thumbnail.src;
+    $('alert-image-full').alt = thumbnail.alt;
+    $('alert-image-viewer').hidden = false;
+    $('alert-image-close').focus();
+});
+$('alert-image-viewer').addEventListener('click', function (event) {
+    if (event.target === this || event.target === $('alert-image-close')) closeAlertImage();
+});
+document.addEventListener('keydown', function (event) {
+    if ($('alert-image-viewer').hidden) return;
+    if (event.key === 'Escape' || event.keyCode === 27) closeAlertImage();
+    if (event.key === 'Tab' || event.keyCode === 9) event.preventDefault();
+});
 setInterval(render, 15000);
 window.addEventListener('resize', alignCountdowns);
 setInterval(update, 30000);
