@@ -10,8 +10,8 @@ html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%}bo
 main{max-width:1320px;margin:auto;padding:0 clamp(14px,2.8vw,34px) 24px}
 header{margin:0 calc(-1 * clamp(14px,2.8vw,34px)) 25px;padding:21px clamp(14px,2.8vw,34px);background:var(--navy);color:white;display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:7px solid var(--blue)}
 .brand{display:flex;align-items:center;gap:16px}.t-roundel{width:60px;height:60px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;border-radius:50%;border:3px solid #fff;box-shadow:inset 0 0 0 2px #0d0d0d;position:relative}.t-roundel .t-stem{position:absolute;background:#0d0d0d;width:12px;height:28px;top:18px;left:50%;transform:translateX(-50%);border-radius:1px}.t-roundel .t-bar{position:absolute;background:#0d0d0d;width:30px;height:9px;top:16px;left:50%;transform:translateX(-50%);border-radius:1px}
-header .sub{color:#c6d8e8;font-size:12px;text-transform:uppercase;letter-spacing:.13em;font-weight:700;margin-bottom:5px}h1{font-size:clamp(27px,3.4vw,44px);margin:0;letter-spacing:-.045em;font-weight:750;line-height:1.05}
-.clock{font-size:clamp(19px,2.5vw,32px);font-weight:750;text-align:right;font-variant-numeric:tabular-nums}.status{font-size:12px;color:#d1e0eb;text-align:right;margin-top:6px}.dot{display:inline-block;width:8px;height:8px;background:#58d691;border-radius:50%;margin-right:6px}
+
+.status{font-size:12px;color:#d1e0eb;text-align:right;margin-top:6px}.dot{display:inline-block;width:8px;height:8px;background:#58d691;border-radius:50%;margin-right:6px}
 .groups{display:grid;gap:25px}.group h2{font-size:16px;color:#193e5d;text-transform:uppercase;letter-spacing:.035em;font-weight:800;margin:0 0 11px;display:flex;align-items:center;gap:10px}.group h2:before{content:"";display:block;background:var(--blue);width:7px;height:22px;flex-shrink:0}.group:first-child h2:before{background:var(--green)}
 .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.card{background:white;border:1px solid var(--line);border-radius:4px;padding:19px;min-width:0;box-shadow:0 2px 4px #0f315312;border-top:5px solid var(--bus)}.group:first-child .card{border-top-color:var(--green)}
 .row{display:flex;align-items:flex-start;gap:12px}.pill{min-width:54px;text-align:center;padding:9px 8px;border-radius:3px;font-size:23px;font-weight:800;line-height:1.05;background:var(--bus);color:#15191c}.pill.train{background:var(--green);color:white;border-radius:50%;min-width:48px;height:48px;padding:11px 8px;font-size:22px}
@@ -89,37 +89,35 @@ main{max-width:1480px}
 .legend i{display:block;width:9px;height:9px;border-radius:50%}
 @media(max-width:1000px){.groups{grid-template-columns:minmax(0,1fr) minmax(280px,.80fr)}.group:first-child .card{align-items:flex-start;flex-direction:column}.group:first-child .card .times{width:100%}.group:first-child .card .time{flex:1}}
 @media(max-width:760px){.groups{grid-template-columns:1fr}.group:first-child .card{flex-direction:row;align-items:center}.group:first-child .card .times{width:auto}.alert-panel{margin-top:2px}}
-@media(max-width:520px){.group:first-child .card{flex-direction:column;align-items:stretch}.group:first-child .card .times{width:100%}.group:first-child .card .time{flex:1}.bus-arrival{padding:11px 12px}.arrival-stop{font-size:14px}.count{min-width:59px}.count .num{font-size:27px}.brand{gap:9px}header .sub{font-size:9px}}
+@media(max-width:520px){.group:first-child .card{flex-direction:column;align-items:stretch}.group:first-child .card .times{width:100%}.group:first-child .card .time{flex:1}.bus-arrival{padding:11px 12px}.arrival-stop{font-size:14px}.count{min-width:59px}.count .num{font-size:27px}.brand{gap:9px}}
 
 /* Consistent arrival rows, balanced header, and legible service segments */
 header{padding-top:18px;padding-bottom:18px;align-items:center;gap:24px}
 header .brand{min-width:0;flex:1}
-.header-meta{min-width:205px;text-align:right;display:grid;justify-items:end;gap:1px}
-.header-meta .date{font-size:14px;color:#d9e8f5;font-weight:650;letter-spacing:.01em}
-.header-meta .clock{font-size:clamp(26px,3vw,39px);line-height:1.15;font-weight:750}
+.header-meta{min-width:205px;text-align:right}
+
+
 .header-meta .status{margin-top:3px}
 .group:first-child .train-arrivals{border-top-color:var(--green)}
 .group:first-child .train-arrivals .bus-arrival{display:flex;align-items:center;flex-direction:row;padding:12px 17px;min-height:88px;gap:12px}
 .group:first-child .train-arrivals .pill.train{background:var(--green);color:#fff;border-radius:3px;min-width:47px;width:auto;height:auto;padding:8px 7px;font-size:20px;line-height:1.05}
 .group:first-child .train-arrivals .arrival-stop{font-size:15px}
 .group:first-child .train-arrivals .stop{margin-top:3px;font-size:12px}
-.group:first-child .train-arrivals .count{margin:0;flex:0 0 auto;min-width:72px}
-.group:first-child .train-arrivals .count .num{font-size:30px}
 .segment{background:#f2f6f9;border-left:3px solid #657f96;padding:9px 11px;margin:8px 0 10px;display:grid;gap:3px;line-height:1.4;font-size:13px}
 .segment-label{font-size:10px;letter-spacing:.065em;text-transform:uppercase;font-weight:800;color:#526476}
 .alert-details{margin-top:10px;font-size:12px;line-height:1.5}
 .alert-details summary{color:var(--blue);cursor:pointer;font-weight:700;list-style:revert}
 .alert-details p{white-space:pre-line;overflow-wrap:anywhere;color:var(--ink)}
 .alert-item .alert-head{overflow-wrap:anywhere}
-@media(max-width:760px){header{align-items:flex-start}.header-meta{min-width:0}.header-meta .date{font-size:11px}.header-meta .clock{font-size:26px}}
-@media(max-width:480px){header{flex-wrap:wrap}.header-meta{width:100%;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}.header-meta .status{width:100%;text-align:left}.header-meta .clock{font-size:25px}.header-meta .date{font-size:12px}.group:first-child .train-arrivals .bus-arrival{flex-direction:row;align-items:center}}
+@media(max-width:760px){header{align-items:flex-start}.header-meta{min-width:0}}
+@media(max-width:480px){header{flex-wrap:wrap}.header-meta{width:100%;display:block}.header-meta .status{width:100%;text-align:left}.group:first-child .train-arrivals .bus-arrival{flex-direction:row;align-items:center}}
 
 /* Bartlett Street / MBTA-inspired redesign */
 .t-roundel{width:63px;height:63px;display:block;flex-shrink:0;background:#fff;border:0;padding:0;box-shadow:none;border-radius:50%}
 .brand{gap:16px}
-header .sub{font-size:12px;letter-spacing:.16em;font-weight:700;color:#cbdce9;margin-bottom:4px}
+
 header .sub-dot{padding:0 5px;color:#8eb5d2}
-header h1{font-size:clamp(32px,3.5vw,47px);font-weight:750;letter-spacing:-.035em}
+
 header{border-bottom:5px solid #216b9d}
 .groups .group h2{display:block;margin:0;padding:12px 17px;font-size:15px;line-height:1.3;letter-spacing:.045em;color:#fff;background:#00843d;border-radius:4px 4px 0 0;text-transform:uppercase;font-weight:800}
 .groups .group h2:before{display:none}
@@ -134,20 +132,20 @@ header{border-bottom:5px solid #216b9d}
 .group:first-child .train-arrivals .arrival-stop{font-size:17px}
 .pill{border-radius:3px}
 .legend{margin-top:1px;font-size:11px}
-@media(max-width:650px){.t-roundel{width:49px;height:49px}header .sub{font-size:10px;letter-spacing:.075em}.brand{gap:10px}.groups .group h2{padding:11px 13px}.bus-arrival,.group:first-child .train-arrivals .bus-arrival{padding:12px 13px}.arrival-info .arrival-stop{font-size:15px}}
+@media(max-width:650px){.t-roundel{width:49px;height:49px}.brand{gap:10px}.groups .group h2{padding:11px 13px}.bus-arrival,.group:first-child .train-arrivals .bus-arrival{padding:12px 13px}.arrival-info .arrival-stop{font-size:15px}}
 
 /* Safari 10 fallback: flex layouts instead of CSS grid/clamp() */
 main{max-width:1480px;padding:0 22px 20px}
 header{margin:0 -22px 22px;padding:18px 22px}
-h1{font-size:38px}
-.header-meta .clock{font-size:34px}
+
+
 .groups{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;gap:0}
 .arrivals-column{display:block;width:59%;-webkit-flex:0 0 59%;flex:0 0 59%;padding-right:12px}
 .arrivals-column .group{margin-bottom:17px}
 .groups>.alert-panel{width:41%;-webkit-flex:0 0 41%;flex:0 0 41%;margin-left:0}
 .green-overview,.cards{display:block}
 .bus-arrival{display:-webkit-flex;display:flex}
-@media(max-width:760px){.groups{display:block}.arrivals-column{width:100%;padding-right:0}.groups>.alert-panel{width:100%;margin-top:15px}header{margin-bottom:16px}h1{font-size:29px}.header-meta{min-width:150px}.header-meta .clock{font-size:24px}.header-meta .date{font-size:11px}}
+@media(max-width:760px){.groups{display:block}.arrivals-column{width:100%;padding-right:0}.groups>.alert-panel{width:100%;margin-top:15px}header{margin-bottom:16px}.header-meta{min-width:150px}}
 
 /* Spacious landscape iPad layout — Safari 10 compatible */
 @media (min-width:761px){
@@ -182,7 +180,7 @@ h1{font-size:38px}
 .arrivals-column .arrival-info .arrival-stop{font-size:16px;line-height:1.28}
 .arrivals-column .arrival-info .stop{line-height:1.32;margin-top:5px}
 .arrivals-column .walk-note{margin-top:8px}
-.arrivals-column .count{min-width:57px;padding-left:10px}
+.arrivals-column .count{min-width:57px;padding-left:10px;-webkit-flex:0 0 auto;flex:0 0 auto;}
 .arrivals-column .count .num{font-size:29px}
 .alert-panel .alert-heading{padding:17px 21px 14px}
 .alert-panel .alert-item{padding:15px 21px}
@@ -214,11 +212,7 @@ h1{font-size:38px}
   .t-roundel{width:49px;height:49px;}
   .brand{margin-right:12px;}
   header .brand > div:last-child{margin-left:15px;}
-  header .sub{font-size:10px;letter-spacing:.10em;margin-bottom:2px;}
-  header h1{font-size:30px;line-height:1.04;}
   .header-meta{min-width:165px;}
-  .header-meta .date{font-size:11px;}
-  .header-meta .clock{font-size:27px;line-height:1.1;}
   .header-meta .status{font-size:10px;margin-top:1px;}
   .groups{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;}
   .arrivals-column{width:43%;-webkit-flex:0 0 43%;flex:0 0 43%;padding-right:14px;}
@@ -231,8 +225,8 @@ h1{font-size:38px}
   .arrivals-column .arrival-info .arrival-stop,.group:first-child .train-arrivals .arrival-stop{font-size:14px;line-height:1.15;}
   .arrivals-column .arrival-info .stop,.group:first-child .train-arrivals .stop{font-size:11px;line-height:1.15;margin-top:2px;}
   .arrivals-column .walk-note{font-size:10px;margin-top:4px;line-height:1.15;}
-  .arrivals-column .count,.group:first-child .train-arrivals .count{min-width:51px;width:51px;-webkit-flex:0 0 51px;flex:0 0 51px;padding-left:7px;margin-left:7px;}
-  .arrivals-column .count .num,.group:first-child .train-arrivals .count .num{font-size:25px;line-height:1.0;}
+  .arrivals-column .count{min-width:51px;-webkit-flex:0 0 auto;flex:0 0 auto;padding-left:7px;margin-left:7px;}
+  .arrivals-column .count .num{font-size:25px;line-height:1.0;}
   .arrivals-column .count .unit{font-size:9px;margin-top:2px;}
   .legend{margin-top:3px;font-size:10px;line-height:1.2;}
   .legend span{margin-right:12px;margin-bottom:3px;}
@@ -260,6 +254,9 @@ h1{font-size:38px}
 .alert-panel .alert-item{background:#fff;border:1px solid #d8e0e6;border-radius:5px;margin:0 0 12px;overflow:hidden;padding:0;box-shadow:0 1px 3px rgba(12,42,64,.08);}
 .alert-banner-wrap{padding:12px 14px 0;}
 .alert-banner{display:inline-block;padding:6px 12px;border-radius:3px;font-size:12px;line-height:1.2;color:#fff;font-weight:800;letter-spacing:.035em;}
+.alert-banner-wrap .alert-banner{margin:0 4px 4px 0;max-width:100%;}
+.alert-banner-wrap .alert-dates{background:#e5ebf0;color:#334b61;text-transform:none;}
+.alert-banner-wrap .alert-stops{background:#d5dfe8;color:#263d51;text-transform:none;}
 .alert-body{padding:10px 14px 14px;}
 .alert-panel .alert-head{line-height:1.42;}
 .alert-panel .alert-more{background:#fff;border-top:1px solid #d8e0e6;}
@@ -287,12 +284,12 @@ html,body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   .groups>.alert-panel{min-width:0;box-sizing:border-box;}
   .arrivals-column .bus-arrival,.group:first-child .train-arrivals .bus-arrival{min-width:0;}
   .arrivals-column .arrival-info,.group:first-child .train-arrivals .arrival-info{min-width:0;}
-  .arrivals-column .count,.group:first-child .train-arrivals .count{
-    min-width:75px;width:75px;-webkit-flex:0 0 75px;flex:0 0 75px;
-    margin-left:6px;padding-left:7px;overflow:visible;
+  .arrivals-column .count{
+    min-width:75px;-webkit-flex:0 0 auto;flex:0 0 auto;
+    margin-left:6px;padding-left:7px;
   }
-  .arrivals-column .count .num,.group:first-child .train-arrivals .count .num{font-size:25px;letter-spacing:0;}
-  .arrivals-column .count .num.is-now,.group:first-child .train-arrivals .count .num.is-now{font-size:19px;letter-spacing:0;}
+  .arrivals-column .count .num{font-size:25px;letter-spacing:0;}
+  .arrivals-column .count .num.is-now{font-size:19px;letter-spacing:0;}
 }
 
 
@@ -304,22 +301,24 @@ html,body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   overflow:hidden;box-shadow:0 2px 4px rgba(15,49,83,.08);
 }
 .arrivals-heading{background:#163d60;color:#fff;padding:13px 16px;border-bottom:1px solid #315673;}
+
 .arrivals-panel-title{color:#fff;font-size:17px;font-weight:800;line-height:1.2}
+.arrivals-heading .status{font-size:11px;text-align:left;margin-top:4px;}
+.arrivals-heading .status.error{color:#ffd5d0;}
 .arrivals-content{padding:11px 12px 3px;-webkit-flex:1 1 auto;flex:1 1 auto;}
 .arrivals-panel .group{margin-bottom:11px;}
 .arrivals-panel .group h2{border-radius:3px 3px 0 0;margin:0;}
 .arrivals-panel .group h2:before{display:none;}
 .arrivals-panel .card,.arrivals-panel .destination-card{border-radius:0 0 3px 3px;box-shadow:none;}
-.arrivals-footer{border-top:1px solid #d8e0e6;background:#fff;padding:10px 12px;}
-.arrivals-footer .legend{margin:0;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;line-height:1.4;}
-.arrivals-footer .legend span{display:inline-block;margin-right:12px;margin-bottom:3px;white-space:nowrap;}
+.arrivals-footer{border-top:1px solid #d8e0e6;background:#fff;padding:10px 12px;display:flex;-webkit-align-items:center;align-items:center;}
+.arrivals-footer .legend{flex:1 1 auto;min-width:0;margin:0;gap:0;-webkit-align-items:baseline;align-items:baseline;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;line-height:1.4;}
+.arrivals-footer .legend span{display:inline-block;margin-right:6px;white-space:nowrap;}
 .arrivals-footer .legend i{display:inline-block;vertical-align:middle;margin-right:6px;}
-.refresh-caption{font-size:11px;color:var(--muted);margin-top:4px;}
+.arrivals-footer .refresh-caption{flex:0 0 auto;margin-left:8px;font-size:11px;color:var(--muted);white-space:nowrap;}
 .groups>.alert-panel{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;align-self:stretch;}
 .alert-panel .alert-list{-webkit-flex:1 1 auto;flex:1 1 auto;}
 .alert-panel .alert-more{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;flex-wrap:wrap;}
-.alert-actions{white-space:nowrap;display:inline-block;margin-left:10px;}
-.alert-actions button{font-size:11px;padding:4px 7px;margin-right:5px;}
+.alert-more .refresh-caption{white-space:nowrap;}
 @media screen and (min-width:761px){
  .arrivals-column{padding-right:0;margin-right:14px;width:calc(43% - 14px);-webkit-flex:0 0 calc(43% - 14px);flex:0 0 calc(43% - 14px);}
  .groups>.alert-panel{width:57%;-webkit-flex:0 0 57%;flex:0 0 57%;}
@@ -327,10 +326,8 @@ html,body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
  .arrivals-panel-title{font-size:17px;}
  .arrivals-content{padding:9px 10px 1px;}
  .arrivals-panel .group{margin-bottom:9px;}
- .arrivals-footer{padding:8px 10px;}
- .arrivals-footer .legend{font-size:10px;}
- .arrivals-footer .legend span{margin-right:11px;}
- .refresh-caption{font-size:10px;margin-top:3px;}
+ .arrivals-footer,.alert-panel .alert-more{min-height:45px;padding:8px 10px;font-size:10px;line-height:1.4;}
+ .arrivals-footer .legend,.arrivals-footer .refresh-caption{font-size:10px;}
  .alert-panel .alert-list{max-height:calc(100vh - 185px);overflow-y:auto;}
 }
 @media screen and (max-width:760px){
@@ -339,9 +336,22 @@ html,body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
  .groups>.alert-panel{width:100%;}
 }
 
+header .brand{gap:0;}
+header .brand .t-roundel{margin-right:12px;}
+@media(max-width:650px){header .brand .t-roundel{margin-right:8px;}}
+header .header-primary{margin:0;font-size:30px;font-weight:750;line-height:1.04;letter-spacing:-.035em;}
+header #clock{font-size:28px;line-height:31.2px;}
+header .header-secondary{margin:4px 0 0;color:#cbdce9;font-size:12px;font-weight:700;line-height:1.2;letter-spacing:.10em;text-transform:uppercase;}
+@media(max-width:760px){
+  header .header-primary{font-size:29px;}
+  header #clock{font-size:27px;line-height:30.16px;}
+}
+.arrivals-panel .green-group .train-arrivals{background:#e5f3eb;border-color:#a9cdb8;}
+.arrivals-panel .green-group .train-arrivals .bus-arrival{background:transparent;border-bottom-color:#a9cdb8;}
+.arrivals-panel .green-group .train-arrivals .arrival-stop{color:#124e30;font-size:18px;font-weight:800;}
 </style>
 </head>
-<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><div class="sub">Bartlett Street <span class="sub-dot">·</span> Somerville</div><h1>Arrivals</h1></div></div><div class="header-meta"><div class="date" id="date">—</div><div class="clock" id="clock">--:--</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div></main>
+<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><h1 class="header-primary">Bartlett Street</h1><div class="header-secondary">Somerville</div></div></div><div class="header-meta"><div class="header-primary" id="clock">--:--</div><div class="header-secondary" id="date">—</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div></main>
 <script>
 /* Safari 10 compatibility helpers */
 if (!Number.isFinite) Number.isFinite=function(n){return typeof n==='number'&&isFinite(n);};
@@ -454,6 +464,7 @@ var STOP_RULES = [
     { route: '89', match: /^broadway @ bartlett st$/i, dir: 'sullivan', walk: 7, jog: 6 }
 ];
 var TRAIN = { id: 'place-mgngl', route: 'Green-E', walk: 9, jog: 6 };
+var ALERT_REFRESH_MS = 30 * 60 * 1000;
 var upcomingAlerts = [], alertsLoaded = false, alertsError = '', alertLastFetch = 0, alertNextRetry = 0, alertBusy = false;
 var routeDestinations = {};
 var targets = [], predictions = [], lastSuccess = 0, nextRetry = 0, errorCount = 0, busy = false, setupError = '';
@@ -558,7 +569,7 @@ function stationHTML(dir) {
     // Use the same rows and countdown styling as the bus destination cards.
     var info = "<div class=\"pill train\">E</div><div class=\"arrival-info\"><div class=\"arrival-stop\">".concat(esc(dest), "</div><div class=\"stop\">Magoun Square</div><div class=\"walk-note\">About ").concat(TRAIN.walk, " min walk</div></div>");
     if (!list.length)
-        return "<div class=\"destination-card train-arrivals\"><div class=\"bus-arrival\">".concat(info, "<div class=\"count\">\u2014<span class=\"unit\">No predictions</span></div></div></div>");
+        return "<div class=\"destination-card train-arrivals\"><div class=\"bus-arrival\">".concat(info, "<div class=\"count\"><span class=\"num\">\u2014</span><span class=\"unit\">No predictions</span></div></div></div>");
     return "<div class=\"destination-card train-arrivals\">".concat(list.map(function (p) { var _a; return "<div class=\"bus-arrival\">".concat(info, "<div class=\"count ").concat(reachClass(p.when, TRAIN.walk, TRAIN.jog), "\"><span class=\"num\">").concat((_a = mins(p.when)) !== null && _a !== void 0 ? _a : '—', "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div>"); }).join(''), "</div>");
 }
 function goalHTML(goal) {
@@ -567,18 +578,29 @@ function goalHTML(goal) {
         return '<div class="empty">No upcoming predictions</div>';
     return list.map(function (p) { return "<div class=\"bus-arrival\"><div class=\"pill\">".concat(esc(p.route), "</div><div class=\"arrival-info\"><div class=\"arrival-stop\">").concat(esc(destination(p.route, p.direction) || (goal === 'davis' ? 'Davis Square' : 'Sullivan Square')), "</div><div class=\"stop\">").concat(esc(p.stopName), "</div><div class=\"walk-note\">About ").concat(p.walk, " min walk</div></div><div class=\"count ").concat(reachClass(p.when, p.walk, p.jog), "\"><span class=\"num\">").concat(mins(p.when), "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div>"); }).join('');
 }
-function alertDate(start) { return new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(start)); }
+function isActivePeriod(period, now) {
+    return Date.parse(period.start) <= now && (!period.end || Date.parse(period.end) > now);
+}
+function alertDates(periods) {
+    var formatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
+    var labels = [];
+    periods.forEach(function (period) {
+        var start = formatter.format(new Date(period.start));
+        var end = period.end && Number.isFinite(Date.parse(period.end)) ? formatter.format(new Date(period.end)) : '';
+        var label = end && end !== start ? start + '–' + end : start;
+        if (labels.indexOf(label) === -1)
+            labels.push(label);
+    });
+    return labels.join(' · ');
+}
 function lineColor(line) {
     return { 'Red': '#da291c', 'Orange': '#ed8b00', 'Blue': '#003da5', 'Green': '#00843d' }[line] || '#526476';
 }
 function affectedSegment(text) {
     // Only show a segment explicitly named in the MBTA alert; never infer station closures.
     var t = String(text || '').replace(/\s+/g, ' ').trim();
-    var m = t.match(/(?:no (?:green line |red line |orange line |blue line )?trains|(?:shuttle )?buses (?:will )?replace (?:train )?service|(?:train )?service (?:is )?suspended)[^.!?]{0,100}?between\s+([^.!?;]{3,180}?)\s+and\s+([^.!?;,]{3,90})(?=[,.;!?]|$)/i);
-    if (m)
-        return "".concat(m[1].trim(), " \u2013 ").concat(m[2].trim());
-    var n = t.match(/between\s+([^.!?;]{3,110}?)\s+and\s+([^.!?;,]{3,90})(?=[,.;!?]|$)/i);
-    return n ? "".concat(n[1].trim(), " \u2013 ").concat(n[2].trim()) : '';
+    var match = t.match(/\bbetween\s+([^.!?;]{3,110}?)\s+and\s+([^.!?;,]{3,90}?)(?=\s+(?:from|on|starting|beginning|through|until|during|after|due to)\b|[,.!?;]|$)/i);
+    return match ? match[1].trim() + ' – ' + match[2].trim() : '';
 }
 function upcomingPanel() {
     var items = upcomingAlerts.slice(0, 5).map(function (a) {
@@ -588,20 +610,26 @@ function upcomingPanel() {
         var bannerStyle = 'background:' + lineColor(line) + ';';
         var source = a.fullTitle || a.title || a.description || 'Upcoming service change';
         var bodyText = compactText(source, 280);
-        return '<div class="alert-item">' +
-            '<div class="alert-banner-wrap"><span class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</span></div>' +
+        var segment = affectedSegment(source) || affectedSegment(a.description);
+        var activeTab = a.active ? '<span class="alert-banner alert-dates">Active now</span>' : '';
+        var dateTab = a.dates ? '<span class="alert-banner alert-dates">' + esc(a.dates) + '</span>' : '';
+        var stopTab = segment ? '<span class="alert-banner alert-stops">' + esc(segment) + '</span>' : '';
+        var activeTint = { Red: '#fce9e8', Orange: '#fff0dc', Blue: '#e6eefb', Green: '#e5f3eb' };
+        var cardStyle = a.active ? ' style="background-color:' + (activeTint[line] || '#edf1f5') + ';"' : '';
+        return '<div class="alert-item"' + cardStyle + '>' +
+            '<div class="alert-banner-wrap"><span class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</span>' + activeTab + dateTab + stopTab + '</div>' +
             '<div class="alert-body"><div class="alert-head">' + esc(bodyText) + '</div></div>' +
             '</div>';
     }).join('');
     if (!items) {
         items = '<div class="alert-empty">' +
-            (!alertsLoaded ? 'Checking upcoming subway service changes…' : alertsError ? 'Service updates unavailable: ' + esc(alertsError) : 'No upcoming shuttle buses or subway suspensions reported in the next 30 days.') +
+            (!alertsLoaded ? 'Checking upcoming subway service changes…' : alertsError ? 'Service updates unavailable: ' + esc(alertsError) : 'No active or upcoming shuttle buses or subway suspensions reported.') +
             '</div>';
     }
-    return '<aside class="alert-panel" aria-label="Upcoming subway service alerts">' +
-        '<div class="alert-heading"><div class="alert-title">Upcoming Service Disruptions</div><div class="alert-sub">Next 30 days</div></div>' +
+    return '<aside class="alert-panel" aria-label="Active and upcoming subway service alerts">' +
+        '<div class="alert-heading"><div class="alert-title">Service Disruptions</div><div class="alert-sub">Active now and next 30 days</div></div>' +
         '<div class="alert-list">' + items + '</div>' +
-        '<div class="alert-more"><a href="https://www.mbta.com/alerts/subway" target="_blank" rel="noopener">View all MBTA subway alerts</a><span class="alert-actions"><button id="retry" type="button">Refresh now</button> <a href="https://www.mbta.com/" target="_blank" rel="noopener">MBTA</a></span></div>' +
+        '<div class="alert-more"><a href="https://www.mbta.com/alerts/subway" target="_blank" rel="noopener">View all MBTA subway alerts</a><span class="refresh-caption">Refreshed every 30m</span></div>' +
         '</aside>';
 }
 function updateAlerts() {
@@ -610,7 +638,7 @@ function updateAlerts() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (alertBusy || document.hidden || Date.now() < alertNextRetry || Date.now() - alertLastFetch < 600000)
+                    if (alertBusy || document.hidden || Date.now() < alertNextRetry || Date.now() - alertLastFetch < ALERT_REFRESH_MS)
                         return [2 /*return*/];
                     alertBusy = true;
                     _a.label = 1;
@@ -625,8 +653,11 @@ function updateAlerts() {
                         var a = item.attributes || {};
                         if (!['SHUTTLE', 'SUSPENSION'].includes(a.effect))
                             return [];
-                        var starts = (a.active_period || []).map(function (p) { return p.start; }).filter(Boolean).map(function (s) { return Date.parse(s); }).filter(function (s) { return Number.isFinite(s) && s > now_1 && s <= end_1; });
-                        if (!starts.length)
+                        var periods = (a.active_period || []).filter(function (period) {
+                            var start = Date.parse(period.start);
+                            return isActivePeriod(period, now_1) || (start > now_1 && start <= end_1);
+                        }).sort(function (left, right) { return Date.parse(left.start) - Date.parse(right.start); });
+                        if (!periods.length)
                             return [];
                         var affectedRoutes = __spreadArray([], __read(new Set((a.informed_entity || []).map(function (e) { return e.route; }).filter(Boolean))), false);
                         var affectedLines = ['Red', 'Orange', 'Blue'].filter(function (r) { return affectedRoutes.includes(r); }).map(function (r) { return r + ' Line'; });
@@ -634,8 +665,8 @@ function updateAlerts() {
                         if (greenBranches.length)
                             affectedLines.push('Green Line' + (greenBranches.length < 4 ? ' (' + greenBranches.join(', ') + ')' : ''));
                         var kinds = { SHUTTLE: 'Shuttle buses', SUSPENSION: 'Suspension' };
-                        return [{ start: new Date(Math.min.apply(Math, __spreadArray([], __read(starts), false))).toISOString(), title: a.short_header || a.header || a.service_effect || 'Upcoming subway service change', fullTitle: a.header || a.short_header || '', description: a.description || '', timeframe: a.timeframe || '', effect: kinds[a.effect] || '', branches: affectedLines.join(' · ') || 'Subway', id: item.id }];
-                    }).sort(function (a, b) { return Date.parse(a.start) - Date.parse(b.start); }).filter(function (a, i, array) { return array.findIndex(function (b) { return b.id === a.id; }) === i; });
+                        return [{ start: periods[0].start, active: periods.some(function (period) { return isActivePeriod(period, now_1); }), dates: alertDates(periods), title: a.short_header || a.header || a.service_effect || 'Upcoming subway service change', fullTitle: a.header || a.short_header || '', description: a.description || '', timeframe: a.timeframe || '', effect: kinds[a.effect] || '', branches: affectedLines.join(' · ') || 'Subway', id: item.id }];
+                    }).sort(function (a, b) { return Number(b.active) - Number(a.active) || Date.parse(a.start) - Date.parse(b.start); }).filter(function (a, i, array) { return array.findIndex(function (b) { return b.id === a.id; }) === i; });
                     alertsLoaded = true;
                     alertsError = '';
                     alertLastFetch = Date.now();
@@ -659,9 +690,11 @@ function updateAlerts() {
 function render() {
     $('date').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
     $('clock').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' }).format(new Date());
+    var previousAlertList = $('groups').querySelector('.alert-list');
+    var alertScrollTop = previousAlertList ? previousAlertList.scrollTop : 0;
     $('groups').innerHTML =
       '<section class="arrivals-column arrivals-panel" aria-label="Transit arrivals">' +
-        '<div class="arrivals-heading"><div class="arrivals-panel-title">Transit Arrivals</div></div>' +
+        '<div class="arrivals-heading"><div class="arrivals-panel-title">Arrivals</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div>' +
         '<div class="arrivals-content">' +
           '<section class="group green-group"><h2>Green Line · Inbound</h2><div class="green-overview"><div class="cards">' + stationHTML(0) + '</div></div></section>' +
           '<section class="group bus-group"><h2>Bus · To Davis Square</h2><div class="destination-card">' + goalHTML('davis') + '</div></section>' +
@@ -669,13 +702,14 @@ function render() {
         '</div>' +
         '<div class="arrivals-footer">' +
           '<div class="legend">' +
-            '<span><i style="background:#08753a"></i>Time to walk</span>' +
+            '<span><i style="background:#08753a"></i>Walkable</span>' +
             '<span><i style="background:#d59a1c"></i>Hurry</span>' +
             '<span><i style="background:#98a3ad"></i>Likely missed</span>' +
           '</div>' +
-          '<div class="refresh-caption">Refreshed every 30 seconds</div>' +
+          '<span class="refresh-caption">Refreshed every 30s</span>' +
         '</div>' +
       '</section>' + upcomingPanel();
+    $('groups').querySelector('.alert-list').scrollTop = alertScrollTop;
     var s = $('status');
     if (nextRetry > Date.now()) {
         s.textContent = 'API paused · retry in ' + Math.ceil((nextRetry - Date.now()) / 1000) + 's';
@@ -767,13 +801,12 @@ function update() {
         });
     });
 }
-$('groups').addEventListener('click', function (event) { if (event.target && event.target.id === 'retry') { nextRetry = 0; update(); updateAlerts(); } });
 render();
 initialize().then(update).catch(function (e) { setupError = e.message; render(); });
 updateAlerts();
 setInterval(render, 15000);
 setInterval(update, 30000);
-setInterval(updateAlerts, 600000);
+setInterval(updateAlerts, ALERT_REFRESH_MS);
 document.addEventListener('visibilitychange', function () { if (!document.hidden) {
     update();
     updateAlerts();
