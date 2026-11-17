@@ -340,8 +340,9 @@ html,body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 header .brand{gap:0;}
 header .brand .t-roundel{margin-right:7px;}
 @media(max-width:650px){header .brand .t-roundel{margin-right:5px;}}
-header .header-primary{margin:0;font-size:30px;font-weight:750;line-height:1.04;letter-spacing:-.035em;}
-header #clock{font-size:28px;line-height:31.2px;}
+header .header-primary{margin:0;font-size:30px;font-weight:750;line-height:1.04;letter-spacing:-.01em;}
+header #clock{font-size:28px;line-height:31.2px;letter-spacing:normal;}
+header #clock .clock-separator{position:relative;top:-.10em;padding:0 .04em;}
 header .header-secondary{margin:4px 0 0;color:#cbdce9;font-size:12px;font-weight:700;line-height:1.2;letter-spacing:.10em;text-transform:uppercase;}
 @media(max-width:760px){
   header .header-primary{font-size:29px;}
@@ -716,7 +717,8 @@ function updateAlerts() {
 }
 function render() {
     $('date').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
-    $('clock').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' }).format(new Date());
+    var clockText = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' }).format(new Date());
+    $('clock').innerHTML = esc(clockText).replace(':', '<span class="clock-separator">:</span>');
     var previousAlertList = $('groups').querySelector('.alert-list');
     var alertScrollTop = previousAlertList ? previousAlertList.scrollTop : 0;
     $('groups').innerHTML =
