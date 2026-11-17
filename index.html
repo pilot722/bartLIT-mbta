@@ -352,7 +352,7 @@ header .header-secondary{margin:4px 0 0;color:#cbdce9;font-size:12px;font-weight
 }
 .arrivals-panel .destination-card .bus-arrival,
 .arrivals-panel .green-group .train-arrivals .bus-arrival{padding-right:0;}
-.arrivals-panel .count{width:75px;padding:0 11px;border-left:1px solid var(--line);overflow:visible;text-align:center;-webkit-align-items:center;align-items:center;}
+.arrivals-panel .count{position:relative;width:75px;padding:0 11px;border-left:1px solid var(--line);overflow:visible;text-align:center;-webkit-align-items:center;align-items:center;}
 .arrivals-panel .count-content,.arrivals-panel .count .unit{white-space:nowrap;}
 .arrivals-panel .train-arrivals .count{width:73px;}
 .arrivals-panel .green-group .train-arrivals{background:#e5f3eb;border:3px solid #00843d;border-top:0;}
@@ -574,7 +574,7 @@ function compactText(text, max) {
     return t.length > max ? t.slice(0, max - 1).replace(/\s+\S*$/, '') + '…' : t;
 }
 function stationHTML(dir) {
-    var list = predictions.filter(function (p) { return p.route === 'Green-E' && p.dir === dir; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
+    var list = predictions.filter(function (p) { return p.route === 'Green-E' && p.dir === dir && mins(p.when) !== null; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
     var dest = destination('Green-E', dir) || (dir === 0 ? 'Heath Street' : 'Medford/Tufts');
     // Use the same rows and countdown styling as the bus destination cards.
     var info = "<div class=\"pill train\">E</div><div class=\"arrival-info\"><div class=\"arrival-stop\">".concat(esc(dest), "</div><div class=\"stop\">Magoun Square</div><div class=\"walk-note\">About ").concat(TRAIN.walk, " min walk</div></div>");
@@ -738,6 +738,13 @@ function alignCountdowns() {
         counts[i].style.width = (width - inset) + 'px';
         counts[i].style.minWidth = (width - inset) + 'px';
         counts[i].style.paddingRight = (padding - inset) + 'px';
+        counts[i].style.left = '0';
+    }
+    for (i = 0; i < counts.length; i++) {
+        var count = counts[i];
+        var card = count.parentNode.parentNode;
+        var right = card.getBoundingClientRect().right - card.clientLeft;
+        count.style.left = (right - count.getBoundingClientRect().right) + 'px';
     }
 }
 function render() {
