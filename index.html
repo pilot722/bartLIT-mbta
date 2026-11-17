@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1"><meta name="theme-color" content="#102e4b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Bartlett Street | Arrivals</title>
+<title>34 Bartlett Street | Arrivals</title>
 <style>
 :root{color-scheme:light;--blue:#165c96;--navy:#102e4b;--panel-heading:#24577e;--green:#00843d;--bus:#f2b323;--ink:#172533;--muted:#526476;--line:#d6dee5;--bg:#edf1f4}
 *{box-sizing:border-box}
@@ -297,6 +297,7 @@ html,body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 /* Matched, nested panels for iPad landscape; all rules Safari 10-compatible */
 .groups{display:-webkit-flex;display:flex;-webkit-align-items:stretch;align-items:stretch;}
 .arrivals-panel{
+  gap:0;
   display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;
   background:#eef2f5;border:1px solid var(--line);border-radius:4px;
   overflow:hidden;box-shadow:0 2px 4px rgba(15,49,83,.08);
@@ -323,7 +324,9 @@ html,body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 @media screen and (min-width:761px){
  .arrivals-column{padding-right:0;margin-right:14px;width:calc(43% - 14px);-webkit-flex:0 0 calc(43% - 14px);flex:0 0 calc(43% - 14px);}
  .groups>.alert-panel{width:57%;-webkit-flex:0 0 57%;flex:0 0 57%;}
- .arrivals-heading{padding:11px 14px;}
+ .arrivals-heading,.alert-panel .alert-heading{padding:12px 14px;border-bottom:0;}
+ .arrivals-heading .arrivals-panel-title,.alert-panel .alert-title{font-size:17px;line-height:1.2;margin:0 0 4px;}
+ .arrivals-heading .status,.alert-panel .alert-sub{font-size:11px;line-height:1.2;margin:0;}
  .arrivals-panel-title{font-size:17px;}
  .arrivals-content{padding:9px 10px 1px;}
  .arrivals-panel .group{margin-bottom:9px;}
@@ -341,19 +344,19 @@ header .brand{gap:0;}
 header .brand .t-roundel{margin-right:7px;}
 @media(max-width:650px){header .brand .t-roundel{margin-right:5px;}}
 header .header-primary{margin:0;font-size:30px;font-weight:750;line-height:1.04;letter-spacing:-.01em;}
-header #clock{font-size:28px;line-height:31.2px;letter-spacing:normal;}
+header #clock{letter-spacing:normal;}
 header #clock .clock-separator{position:relative;top:-.10em;padding:0 .04em;}
 header .header-secondary{margin:4px 0 0;color:#cbdce9;font-size:12px;font-weight:700;line-height:1.2;letter-spacing:.10em;text-transform:uppercase;}
 @media(max-width:760px){
   header .header-primary{font-size:29px;}
-  header #clock{font-size:27px;line-height:30.16px;}
 }
 .arrivals-panel .green-group .train-arrivals{background:#e5f3eb;border:3px solid #00843d;border-top:0;}
-.arrivals-panel .green-group .train-arrivals .bus-arrival{background:transparent;border-bottom-color:#a9cdb8;}
-.arrivals-panel .green-group .train-arrivals .arrival-stop{color:#124e30;font-size:18px;font-weight:800;}
+.arrivals-panel .green-group .train-arrivals .bus-arrival{background:transparent;border-bottom:0;}
+.arrivals-panel .green-group .train-arrivals .bus-arrival + .bus-arrival{border-top:2px solid #00843d;}
+.arrivals-panel .green-group .train-arrivals .arrival-stop{color:#000;font-size:18px;font-weight:800;}
 </style>
 </head>
-<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><h1 class="header-primary">Bartlett Street</h1><div class="header-secondary">Somerville</div></div></div><div class="header-meta"><div class="header-primary" id="clock">--:--</div><div class="header-secondary" id="date">—</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div></main>
+<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><h1 class="header-primary">34 Bartlett Street</h1><div class="header-secondary">Somerville</div></div></div><div class="header-meta"><div class="header-primary" id="clock">--:--</div><div class="header-secondary" id="date">—</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div></main>
 <script>
 /* Safari 10 compatibility helpers */
 if (!Number.isFinite) Number.isFinite=function(n){return typeof n==='number'&&isFinite(n);};
