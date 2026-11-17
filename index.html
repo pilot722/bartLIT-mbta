@@ -350,8 +350,9 @@ header .header-secondary{margin:4px 0 0;color:#cbdce9;font-size:12px;font-weight
 @media(max-width:760px){
   header .header-primary{font-size:29px;}
 }
-.arrivals-panel .destination-card .bus-arrival{padding-right:0;}
-.arrivals-panel .count{width:75px;padding:0 7px;border-left:1px solid var(--line);overflow:visible;text-align:center;-webkit-align-items:center;align-items:center;}
+.arrivals-panel .destination-card .bus-arrival,
+.arrivals-panel .green-group .train-arrivals .bus-arrival{padding-right:0;}
+.arrivals-panel .count{width:75px;padding:0 11px;border-left:1px solid var(--line);overflow:visible;text-align:center;-webkit-align-items:center;align-items:center;}
 .arrivals-panel .count-content,.arrivals-panel .count .unit{white-space:nowrap;}
 .arrivals-panel .train-arrivals .count{width:73px;}
 .arrivals-panel .green-group .train-arrivals{background:#e5f3eb;border:3px solid #00843d;border-top:0;}
@@ -724,18 +725,19 @@ function updateAlerts() {
 }
 function alignCountdowns() {
     var counts = $('groups').querySelectorAll('.arrivals-panel .count');
-    var width = 45;
+    var padding = 11;
+    var width = 55;
     var i;
     for (i = 0; i < counts.length; i++) {
         var content = counts[i].querySelector('.count-content');
-        width = Math.max(width, Math.ceil(content.getBoundingClientRect().width) + 17);
+        width = Math.max(width, Math.ceil(content.getBoundingClientRect().width) + 2 * padding + 1);
     }
     for (i = 0; i < counts.length; i++) {
         // The train card's outer border is two pixels thicker than the bus cards'.
         var inset = counts[i].parentNode.parentNode.classList.contains('train-arrivals') ? 2 : 0;
         counts[i].style.width = (width - inset) + 'px';
         counts[i].style.minWidth = (width - inset) + 'px';
-        counts[i].style.paddingRight = (7 - inset) + 'px';
+        counts[i].style.paddingRight = (padding - inset) + 'px';
     }
 }
 function render() {
