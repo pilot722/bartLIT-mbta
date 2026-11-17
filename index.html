@@ -255,7 +255,7 @@ header{margin:0 -22px 22px;padding:18px 22px}
 .alert-banner-wrap{padding:12px 14px 0;}
 .alert-banner{display:inline-block;padding:6px 12px;border-radius:3px;font-size:12px;line-height:1.2;color:#fff;font-weight:800;letter-spacing:.035em;}
 .alert-banner-wrap .alert-banner{margin:0 4px 4px 0;max-width:100%;}
-.alert-banner-wrap .alert-dates{background:#334e65;color:#fff;text-transform:none;}
+.alert-banner-wrap .alert-dates{background:#45627b;color:#fff;text-transform:none;}
 .alert-banner-wrap .alert-active{background:#fff3b0;color:#263d51;text-transform:none;}
 .alert-banner-wrap .alert-stops{background:#e5ebf0;color:#334b61;text-transform:none;}
 .alert-body{padding:10px 14px 14px;}
@@ -587,12 +587,22 @@ function alertDates(periods, header) {
     var range = new RegExp('\\b(' + months + ')\\.?\\s+([0-9]{1,2})\\s*[–—-]\\s*(?:(' + months + ')\\.?\\s+)?([0-9]{1,2})\\b', 'i');
     var stated = String(header || '').match(range);
     if (stated) {
-        var startMonth = stated[1].slice(0, 3);
-        var endMonth = stated[3] ? stated[3].slice(0, 3) : startMonth;
-        return startMonth + ' ' + stated[2] + '–' + (startMonth === endMonth ? '' : endMonth + ' ') + stated[4];
+        var monthNames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+        var startMonth = monthNames.indexOf(stated[1].slice(0, 3).toLowerCase());
+        var endMonth = stated[3] ? monthNames.indexOf(stated[3].slice(0, 3).toLowerCase()) : startMonth;
+        var anchor = new Date(periods[0].start);
+        var year = anchor.getUTCFullYear();
+        if (startMonth - anchor.getUTCMonth() > 6) year--;
+        if (anchor.getUTCMonth() - startMonth > 6) year++;
+        var from = new Date(Date.UTC(year, startMonth, Number(stated[2])));
+        var through = new Date(Date.UTC(year + (endMonth < startMonth ? 1 : 0), endMonth, Number(stated[4])));
+        if (from.getUTCMonth() === startMonth && through.getUTCMonth() === endMonth && through >= from) {
+            var published = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' });
+            return published.format(from) + '–' + published.format(through);
+        }
     }
 
-    var formatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
+    var formatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric' });
     var labels = [];
     periods.forEach(function (period) {
         var start = formatter.format(new Date(period.start));
