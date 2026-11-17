@@ -350,8 +350,10 @@ header .header-secondary{margin:4px 0 0;color:#cbdce9;font-size:12px;font-weight
 @media(max-width:760px){
   header .header-primary{font-size:29px;}
 }
-.arrivals-panel .count{min-width:0;text-align:center;-webkit-align-items:center;align-items:center;padding-right:10px;}
-@media(min-width:761px){.arrivals-panel .count{padding-right:7px;}}
+.arrivals-panel .destination-card .bus-arrival{padding-right:0;}
+.arrivals-panel .count{width:75px;padding:0 7px;border-left:1px solid var(--line);overflow:visible;text-align:center;-webkit-align-items:center;align-items:center;}
+.arrivals-panel .count-content,.arrivals-panel .count .unit{white-space:nowrap;}
+.arrivals-panel .train-arrivals .count{width:73px;}
 .arrivals-panel .green-group .train-arrivals{background:#e5f3eb;border:3px solid #00843d;border-top:0;}
 .arrivals-panel .green-group .train-arrivals .bus-arrival{background:transparent;border-bottom:0;}
 .arrivals-panel .green-group .train-arrivals .bus-arrival + .bus-arrival{border-top:3px solid #00843d;}
@@ -576,14 +578,14 @@ function stationHTML(dir) {
     // Use the same rows and countdown styling as the bus destination cards.
     var info = "<div class=\"pill train\">E</div><div class=\"arrival-info\"><div class=\"arrival-stop\">".concat(esc(dest), "</div><div class=\"stop\">Magoun Square</div><div class=\"walk-note\">About ").concat(TRAIN.walk, " min walk</div></div>");
     if (!list.length)
-        return "<div class=\"destination-card train-arrivals\"><div class=\"bus-arrival\">".concat(info, "<div class=\"count\"><span class=\"num\">\u2014</span><span class=\"unit\">No predictions</span></div></div></div>");
-    return "<div class=\"destination-card train-arrivals\">".concat(list.map(function (p) { var _a; return "<div class=\"bus-arrival\">".concat(info, "<div class=\"count ").concat(reachClass(p.when, TRAIN.walk, TRAIN.jog), "\"><span class=\"num\">").concat((_a = mins(p.when)) !== null && _a !== void 0 ? _a : '—', "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div>"); }).join(''), "</div>");
+        return "<div class=\"destination-card train-arrivals\"><div class=\"bus-arrival\">".concat(info, "<div class=\"count\"><div class=\"count-content\"><span class=\"num\">\u2014</span><span class=\"unit\">No predictions</span></div></div></div></div>");
+    return "<div class=\"destination-card train-arrivals\">".concat(list.map(function (p) { var _a; return "<div class=\"bus-arrival\">".concat(info, "<div class=\"count ").concat(reachClass(p.when, TRAIN.walk, TRAIN.jog), "\"><div class=\"count-content\"><span class=\"num\">").concat((_a = mins(p.when)) !== null && _a !== void 0 ? _a : '—', "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div></div>"); }).join(''), "</div>");
 }
 function goalHTML(goal) {
     var list = predictions.filter(function (p) { return p.goal === goal && mins(p.when) !== null; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
     if (!list.length)
         return '<div class="empty">No upcoming predictions</div>';
-    return list.map(function (p) { return "<div class=\"bus-arrival\"><div class=\"pill\">".concat(esc(p.route), "</div><div class=\"arrival-info\"><div class=\"arrival-stop\">").concat(esc(destination(p.route, p.direction) || (goal === 'davis' ? 'Davis Square' : 'Sullivan Square')), "</div><div class=\"stop\">").concat(esc(p.stopName), "</div><div class=\"walk-note\">About ").concat(p.walk, " min walk</div></div><div class=\"count ").concat(reachClass(p.when, p.walk, p.jog), "\"><span class=\"num\">").concat(mins(p.when), "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div>"); }).join('');
+    return list.map(function (p) { return "<div class=\"bus-arrival\"><div class=\"pill\">".concat(esc(p.route), "</div><div class=\"arrival-info\"><div class=\"arrival-stop\">").concat(esc(destination(p.route, p.direction) || (goal === 'davis' ? 'Davis Square' : 'Sullivan Square')), "</div><div class=\"stop\">").concat(esc(p.stopName), "</div><div class=\"walk-note\">About ").concat(p.walk, " min walk</div></div><div class=\"count ").concat(reachClass(p.when, p.walk, p.jog), "\"><div class=\"count-content\"><span class=\"num\">").concat(mins(p.when), "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div></div>"); }).join('');
 }
 function isActivePeriod(period, now) {
     return Date.parse(period.start) <= now && (!period.end || Date.parse(period.end) > now);
@@ -720,6 +722,22 @@ function updateAlerts() {
         });
     });
 }
+function alignCountdowns() {
+    var counts = $('groups').querySelectorAll('.arrivals-panel .count');
+    var width = 45;
+    var i;
+    for (i = 0; i < counts.length; i++) {
+        var content = counts[i].querySelector('.count-content');
+        width = Math.max(width, Math.ceil(content.getBoundingClientRect().width) + 17);
+    }
+    for (i = 0; i < counts.length; i++) {
+        // The train card's outer border is two pixels thicker than the bus cards'.
+        var inset = counts[i].parentNode.parentNode.classList.contains('train-arrivals') ? 2 : 0;
+        counts[i].style.width = (width - inset) + 'px';
+        counts[i].style.minWidth = (width - inset) + 'px';
+        counts[i].style.paddingRight = (7 - inset) + 'px';
+    }
+}
 function render() {
     $('date').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
     var clockText = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' }).format(new Date());
@@ -744,6 +762,7 @@ function render() {
         '</div>' +
       '</section>' + upcomingPanel();
     $('groups').querySelector('.alert-list').scrollTop = alertScrollTop;
+    alignCountdowns();
     var s = $('status');
     if (nextRetry > Date.now()) {
         s.textContent = 'API paused · retry in ' + Math.ceil((nextRetry - Date.now()) / 1000) + 's';
@@ -839,6 +858,7 @@ render();
 initialize().then(update).catch(function (e) { setupError = e.message; render(); });
 updateAlerts();
 setInterval(render, 15000);
+window.addEventListener('resize', alignCountdowns);
 setInterval(update, 30000);
 setInterval(updateAlerts, ALERT_REFRESH_MS);
 document.addEventListener('visibilitychange', function () { if (!document.hidden) {
