@@ -250,9 +250,34 @@ h1{font-size:38px}
   .footer button{padding:4px 7px;font-size:10px;}
 }
 
+
+/* Service disruptions: strong title and separated, compact line tabs (Safari 10 safe). */
+.alert-panel{background:#eef2f5;border-top:0;}
+.alert-panel .alert-heading{background:#163d60;color:#fff;border-bottom:0;padding:17px 19px 16px;}
+.alert-panel .alert-title{color:#fff;font-weight:800;font-size:20px;line-height:1.2;margin:0 0 5px;}
+.alert-panel .alert-sub{color:#dce7f0;font-size:12px;letter-spacing:.03em;}
+.alert-list{background:#eef2f5;padding:12px 12px 2px;}
+.alert-panel .alert-item{background:#fff;border:1px solid #d8e0e6;border-radius:5px;margin:0 0 12px;overflow:hidden;padding:0;box-shadow:0 1px 3px rgba(12,42,64,.08);}
+.alert-banner-wrap{padding:12px 14px 0;}
+.alert-banner{display:inline-block;padding:6px 12px;border-radius:3px;font-size:12px;line-height:1.2;color:#fff;font-weight:800;letter-spacing:.035em;}
+.alert-body{padding:10px 14px 14px;}
+.alert-panel .alert-head{line-height:1.42;}
+.alert-panel .alert-more{background:#fff;border-top:1px solid #d8e0e6;}
+@media screen and (orientation:landscape) and (min-width:761px){
+ .alert-panel .alert-heading{padding:12px 15px 12px;}
+ .alert-panel .alert-title{font-size:17px;margin-bottom:4px;}
+ .alert-panel .alert-sub{font-size:11px;}
+ .alert-panel .alert-list{padding:9px 10px 1px;max-height:calc(100vh - 195px);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+ .alert-panel .alert-item{margin-bottom:9px;padding:0;}
+ .alert-banner-wrap{padding:9px 11px 0;}
+ .alert-banner{font-size:11px;padding:5px 10px;}
+ .alert-body{padding:8px 11px 11px;}
+ .alert-panel .alert-more{padding:9px 12px;}
+}
+
 </style>
 </head>
-<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><div class="sub">Bartlett Street <span class="sub-dot">·</span> Somerville</div><h1>Arrivals</h1></div></div><div class="header-meta"><div class="date" id="date">—</div><div class="clock" id="clock">--:--</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div><div class="footer"><span>Live MBTA predictions · refreshed every 30 seconds · walking times are approximate</span><span><button id="retry">Refresh now</button> · <a href="https://www.mbta.com/" target="_blank" rel="noopener">MBTA</a></span></div></main>
+<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><div class="sub">Bartlett Street <span class="sub-dot">·</span> Somerville</div><h1>Arrivals</h1></div></div><div class="header-meta"><div class="date" id="date">—</div><div class="clock" id="clock">--:--</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div><div class="footer"><span>Live MBTA predictions · refreshed every 30 seconds</span><span><button id="retry">Refresh now</button> · <a href="https://www.mbta.com/" target="_blank" rel="noopener">MBTA</a></span></div></main>
 <script>
 /* Safari 10 compatibility helpers */
 if (!Number.isFinite) Number.isFinite=function(n){return typeof n==='number'&&isFinite(n);};
@@ -445,13 +470,16 @@ function initialize() {
     });
 }
 function reachClass(when, walk, jog) {
+    // Classify against the SAME whole-minute value shown on screen.
+    // Green: walking time is sufficient. Amber: a moderate jog may make it.
+    // Gray: even a moderate jog is unlikely to make it.
     var eta = (Date.parse(when) - Date.now()) / 60000;
-    if (!Number.isFinite(eta))
+    if (!Number.isFinite(eta) || eta <= 0)
         return 'reachable-late';
-    // One minute of cushion for crossing streets and reaching a stop.
-    if (eta >= walk + 1)
+    var displayedMinutes = Math.ceil(eta);
+    if (displayedMinutes >= walk)
         return 'reachable-walk';
-    if (eta >= jog + 1)
+    if (displayedMinutes >= jog)
         return 'reachable-jog';
     return 'reachable-late';
 }
@@ -497,7 +525,7 @@ function upcomingPanel() {
         var source = a.fullTitle || a.title || a.description || 'Upcoming service change';
         var bodyText = compactText(source, 280);
         return '<div class="alert-item">' +
-            '<div class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</div>' +
+            '<div class="alert-banner-wrap"><span class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</span></div>' +
             '<div class="alert-body"><div class="alert-head">' + esc(bodyText) + '</div></div>' +
             '</div>';
     }).join('');
@@ -507,7 +535,7 @@ function upcomingPanel() {
             '</div>';
     }
     return '<aside class="alert-panel" aria-label="Upcoming subway service alerts">' +
-        '<div class="alert-heading"><div class="alert-title">Upcoming Service Alerts</div><div class="alert-sub">Shuttles & suspensions · next 30 days</div></div>' +
+        '<div class="alert-heading"><div class="alert-title">Upcoming Service Disruptions</div><div class="alert-sub">Next 30 days</div></div>' +
         '<div class="alert-list">' + items + '</div>' +
         '<div class="alert-more"><a href="https://www.mbta.com/alerts/subway" target="_blank" rel="noopener">View all MBTA subway alerts</a></div>' +
         '</aside>';
@@ -567,7 +595,7 @@ function updateAlerts() {
 function render() {
     $('date').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
     $('clock').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' }).format(new Date());
-    $('groups').innerHTML = "<div class=\"arrivals-column\"><section class=\"group green-group\"><h2>Green Line \u00B7 Inbound</h2><div class=\"green-overview\"><div class=\"cards\">".concat(stationHTML(0), "</div></div></section><section class=\"group bus-group\"><h2>Bus \u00B7 To Davis Square</h2><div class=\"destination-card\">").concat(goalHTML('davis'), "</div></section><section class=\"group bus-group\"><h2>Bus \u00B7 To Sullivan Square</h2><div class=\"destination-card\">").concat(goalHTML('sullivan'), "</div></section><div class=\"legend\"><span><i style=\"background:#08753a\"></i>Time to walk</span><span><i style=\"background:#d59a1c\"></i>Jog needed</span><span><i style=\"background:#98a3ad\"></i>Likely missed</span></div></div>").concat(upcomingPanel());
+    $('groups').innerHTML = "<div class=\"arrivals-column\"><section class=\"group green-group\"><h2>Green Line \u00B7 Inbound</h2><div class=\"green-overview\"><div class=\"cards\">".concat(stationHTML(0), "</div></div></section><section class=\"group bus-group\"><h2>Bus \u00B7 To Davis Square</h2><div class=\"destination-card\">").concat(goalHTML('davis'), "</div></section><section class=\"group bus-group\"><h2>Bus \u00B7 To Sullivan Square</h2><div class=\"destination-card\">").concat(goalHTML('sullivan'), "</div></section><div class=\"legend\"><span><i style=\"background:#08753a\"></i>Time to walk</span><span><i style=\"background:#d59a1c\"></i>Hurry</span><span><i style=\"background:#98a3ad\"></i>Likely missed</span></div></div>").concat(upcomingPanel());
     var s = $('status');
     if (nextRetry > Date.now()) {
         s.textContent = 'API paused · retry in ' + Math.ceil((nextRetry - Date.now()) / 1000) + 's';
