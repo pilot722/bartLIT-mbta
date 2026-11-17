@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1"><meta name="theme-color" content="#102e4b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>34 Bartlett Street | Arrivals</title>
+<title>34 Bartlett Street | Departures</title>
 <style>
 :root{color-scheme:light;--blue:#165c96;--navy:#102e4b;--panel-heading:#24577e;--green:#00843d;--bus:#f2b323;--ink:#172533;--muted:#526476;--line:#d6dee5;--bg:#edf1f4}
 *{box-sizing:border-box}
@@ -776,8 +776,8 @@ function render() {
     var previousAlertList = $('groups').querySelector('.alert-list');
     var alertScrollTop = previousAlertList ? previousAlertList.scrollTop : 0;
     $('groups').innerHTML =
-      '<section class="arrivals-column arrivals-panel" aria-label="Transit arrivals">' +
-        '<div class="arrivals-heading"><div class="arrivals-panel-title">Arrivals</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div>' +
+      '<section class="arrivals-column arrivals-panel" aria-label="Transit departures">' +
+        '<div class="arrivals-heading"><div class="arrivals-panel-title">Departures</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div>' +
         '<div class="arrivals-content">' +
           '<section class="group green-group"><h2>Green Line · Inbound</h2><div class="green-overview"><div class="cards">' + stationHTML(0) + '</div></div></section>' +
           '<section class="group bus-group"><h2>Bus · To Davis Square</h2><div class="destination-card">' + goalHTML('davis') + '</div></section>' +
