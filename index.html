@@ -193,6 +193,63 @@ h1{font-size:38px}
   .groups>.alert-panel{width:100%}
 }
 
+
+/* Simplified service alert cards */
+.alert-list{max-height:none;overflow:visible;background:#fff}
+.alert-item{padding:0;border-top:0;border-bottom:1px solid var(--line);background:#fff}
+.alert-banner{padding:9px 14px;color:#fff;font-size:13px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+.alert-body{padding:12px 14px 14px}
+.alert-head{font-size:15px;line-height:1.42;font-weight:700;color:var(--ink);margin:0}
+.alert-date,.service-label,.segment,.alert-details,.line-label,.line-dot,.alert-indicator{display:none!important}
+.alert-more{font-size:12px;color:var(--muted);margin:0;padding:12px 14px}
+.alert-panel{padding:0;overflow:hidden;border-top:5px solid var(--navy)}
+.alert-heading{padding:17px 18px 14px;border-bottom:1px solid var(--line)}
+
+/* iPad landscape: use the screen as a compact, two-column departures board.
+   Explicit widths and margins are intentional Safari 10 fallbacks. */
+@media screen and (orientation:landscape) and (min-width:761px) {
+  html,body{min-height:100%;}
+  main{max-width:1200px;padding:0 15px 5px;}
+  header{margin:0 -15px 12px;padding:10px 17px 11px;border-bottom-width:4px;min-height:78px;}
+  .t-roundel{width:49px;height:49px;}
+  .brand{margin-right:12px;}
+  header .brand > div:last-child{margin-left:15px;}
+  header .sub{font-size:10px;letter-spacing:.10em;margin-bottom:2px;}
+  header h1{font-size:30px;line-height:1.04;}
+  .header-meta{min-width:165px;}
+  .header-meta .date{font-size:11px;}
+  .header-meta .clock{font-size:27px;line-height:1.1;}
+  .header-meta .status{font-size:10px;margin-top:1px;}
+  .groups{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;}
+  .arrivals-column{width:43%;-webkit-flex:0 0 43%;flex:0 0 43%;padding-right:14px;}
+  .groups>.alert-panel{width:57%;-webkit-flex:0 0 57%;flex:0 0 57%;margin:0;}
+  .arrivals-column .group{margin-bottom:11px;}
+  .groups .group h2{padding:8px 12px;font-size:12px;line-height:1.25;letter-spacing:.04em;}
+  .arrivals-column .bus-arrival,.group:first-child .train-arrivals .bus-arrival{min-height:65px;padding:8px 11px;gap:0;}
+  .arrivals-column .pill,.group:first-child .train-arrivals .pill.train{min-width:35px;width:35px;font-size:16px;padding:7px 3px;line-height:1.05;margin-right:13px;}
+  .arrivals-column .arrival-info{min-width:0;padding-left:0;-webkit-flex:1 1 auto;flex:1 1 auto;}
+  .arrivals-column .arrival-info .arrival-stop,.group:first-child .train-arrivals .arrival-stop{font-size:14px;line-height:1.15;}
+  .arrivals-column .arrival-info .stop,.group:first-child .train-arrivals .stop{font-size:11px;line-height:1.15;margin-top:2px;}
+  .arrivals-column .walk-note{font-size:10px;margin-top:4px;line-height:1.15;}
+  .arrivals-column .count,.group:first-child .train-arrivals .count{min-width:51px;width:51px;-webkit-flex:0 0 51px;flex:0 0 51px;padding-left:7px;margin-left:7px;}
+  .arrivals-column .count .num,.group:first-child .train-arrivals .count .num{font-size:25px;line-height:1.0;}
+  .arrivals-column .count .unit{font-size:9px;margin-top:2px;}
+  .legend{margin-top:3px;font-size:10px;line-height:1.2;}
+  .legend span{margin-right:12px;margin-bottom:3px;}
+  .legend i{margin-right:5px;}
+  .alert-panel .alert-heading{padding:11px 14px 10px;}
+  .alert-panel .alert-title{font-size:16px;line-height:1.15;margin-bottom:3px;}
+  .alert-panel .alert-sub{font-size:10px;}
+  .alert-panel .alert-list{max-height:calc(100vh - 205px);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .alert-panel .alert-item{padding:0;}
+  .alert-banner{padding:7px 11px;font-size:12px;}
+  .alert-body{padding:9px 12px 10px;}
+  .alert-panel .alert-head{font-size:13px;line-height:1.34;}
+  .alert-panel .alert-more{padding:9px 12px;}
+  .footer{margin:8px 0 4px;font-size:10px;line-height:1.2;}
+  .footer button{padding:4px 7px;font-size:10px;}
+}
+
 </style>
 </head>
 <body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><div class="sub">Bartlett Street <span class="sub-dot">·</span> Somerville</div><h1>Arrivals</h1></div></div><div class="header-meta"><div class="date" id="date">—</div><div class="clock" id="clock">--:--</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div><div class="footer"><span>Live MBTA predictions · refreshed every 30 seconds · walking times are approximate</span><span><button id="retry">Refresh now</button> · <a href="https://www.mbta.com/" target="_blank" rel="noopener">MBTA</a></span></div></main>
@@ -435,15 +492,25 @@ function upcomingPanel() {
     var items = upcomingAlerts.slice(0, 5).map(function (a) {
         var first = (a.branches || 'Subway').split(' · ')[0];
         var line = first.split(' ')[0];
-        var kind = a.effect === 'Shuttle buses' ? 'Shuttle buses replacing trains' : 'Train service suspension';
-        var segment = affectedSegment(a.fullTitle + ' ' + a.description);
-        var source = a.fullTitle || a.title;
-        return "<div class=\"alert-item\">\n     <div class=\"line-label\"><span class=\"line-dot\" style=\"background:".concat(lineColor(line), "\"></span>").concat(esc(a.branches || 'Subway'), "</div>\n     <div class=\"alert-date\">").concat(esc(alertDate(a.start))).concat(a.timeframe ? ' · ' + esc(compactText(a.timeframe, 55)) : '', "</div>\n     <div class=\"service-label\">").concat(esc(kind), "</div>\n     ").concat(segment ? "<div class=\"segment\"><span class=\"segment-label\">Out-of-service segment</span><strong>".concat(esc(compactText(segment, 170)), "</strong></div>") : '', "\n     <div class=\"alert-head\">").concat(esc(compactText(source, 220)), "</div>\n     ").concat(a.description ? "<details class=\"alert-details\"><summary>Full alert and affected stops</summary><p>".concat(esc(a.description), "</p></details>") : '', "\n   </div>");
+        var bannerLabel = line === 'Green' ? 'Green Line' : (line + ' Line');
+        var bannerStyle = 'background:' + lineColor(line) + ';';
+        var source = a.fullTitle || a.title || a.description || 'Upcoming service change';
+        var bodyText = compactText(source, 280);
+        return '<div class="alert-item">' +
+            '<div class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</div>' +
+            '<div class="alert-body"><div class="alert-head">' + esc(bodyText) + '</div></div>' +
+            '</div>';
     }).join('');
     if (!items) {
-        items = "<div class=\"alert-empty\">".concat(!alertsLoaded ? 'Checking upcoming subway service changes…' : alertsError ? 'Service updates unavailable: ' + esc(alertsError) : 'No upcoming shuttle buses or subway suspensions reported in the next 30 days.', "</div>");
+        items = '<div class="alert-empty">' +
+            (!alertsLoaded ? 'Checking upcoming subway service changes…' : alertsError ? 'Service updates unavailable: ' + esc(alertsError) : 'No upcoming shuttle buses or subway suspensions reported in the next 30 days.') +
+            '</div>';
     }
-    return "<aside class=\"alert-panel\" aria-label=\"Upcoming subway service alerts\">\n  <div class=\"alert-heading\"><div class=\"alert-title\">Upcoming Service Alerts</div><div class=\"alert-sub\">Shuttles & suspensions \u00B7 next 30 days</div></div>\n  <div class=\"alert-list\">".concat(items, "</div>\n  ").concat(upcomingAlerts.length > 5 ? "<div class=\"alert-indicator\">Showing 5 of ".concat(upcomingAlerts.length, " scheduled changes</div>") : '', "\n  <div class=\"alert-more\"><a href=\"https://www.mbta.com/alerts/subway\" target=\"_blank\" rel=\"noopener\">View all MBTA subway alerts</a></div>\n </aside>");
+    return '<aside class="alert-panel" aria-label="Upcoming subway service alerts">' +
+        '<div class="alert-heading"><div class="alert-title">Upcoming Service Alerts</div><div class="alert-sub">Shuttles & suspensions · next 30 days</div></div>' +
+        '<div class="alert-list">' + items + '</div>' +
+        '<div class="alert-more"><a href="https://www.mbta.com/alerts/subway" target="_blank" rel="noopener">View all MBTA subway alerts</a></div>' +
+        '</aside>';
 }
 function updateAlerts() {
     return __awaiter(this, void 0, void 0, function () {
