@@ -702,7 +702,7 @@ function upcomingPanel() {
     }
     return '<aside class="alert-panel" aria-label="Active and upcoming subway service alerts">' +
         '<div class="alert-heading"><div class="alert-title">Service Disruptions</div><div class="alert-sub">Active and upcoming</div></div>' +
-        '<div class="alert-list">' + (alertsError && alertLastFetch ? '<div class="alert-empty">Last updated ' + esc(snapshotTime(alertLastFetch)) + ' · Saved service disruptions</div>' : '') + items + '</div>' +
+        '<div class="alert-list">' + items + '</div>' +
         '<div class="alert-more"><a href="https://www.mbta.com/alerts/subway" target="_blank" rel="noopener">View all MBTA subway alerts</a><span class="refresh-caption">Refreshed every 30m</span></div>' +
         '</aside>';
 }
@@ -712,7 +712,7 @@ function updateAlerts() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (alertBusy || document.hidden || Date.now() < alertNextRetry || Date.now() - alertLastFetch < ALERT_REFRESH_MS)
+                    if (alertBusy || document.hidden || Date.now() < alertNextRetry || (!alertsError && Date.now() - alertLastFetch < ALERT_REFRESH_MS))
                         return [2 /*return*/];
                     alertBusy = true;
                     _a.label = 1;
@@ -970,7 +970,7 @@ document.addEventListener('keydown', function (event) {
 setInterval(render, 15000);
 window.addEventListener('resize', alignCountdowns);
 setInterval(refreshDepartures, 30000);
-setInterval(updateAlerts, ALERT_REFRESH_MS);
+setInterval(updateAlerts, 30000);
 document.addEventListener('visibilitychange', function () { if (!document.hidden) {
     refreshDepartures();
     updateAlerts();
