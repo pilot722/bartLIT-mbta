@@ -497,7 +497,23 @@ var routeDestinations = {};
 var targets = [], predictions = [], lastSuccess = 0, nextRetry = 0, errorCount = 0, busy = false, setupError = '';
 var $ = function (id) { return document.getElementById(id); };
 var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]); }); };
-function mins(t) { var diff = (Date.parse(t) - Date.now()) / 60000; if (!Number.isFinite(diff) || diff < -.6)
+var departureKey = 'bartlit_departures_v7', alertKey = 'bartlit_alerts_v1';
+var departuresStale = false, initializing = false, departureDisplayTime = 0;
+function saveSnapshot(key, at, rows) {
+    try { localStorage.setItem(key, JSON.stringify({ at: at, rows: rows })); } catch (error) {}
+}
+function loadSnapshot(key) {
+    try {
+        var snapshot = JSON.parse(localStorage.getItem(key));
+        if (snapshot && Number.isFinite(snapshot.at) && snapshot.at > 0 && Array.isArray(snapshot.rows))
+            return snapshot;
+    } catch (error) {}
+    return null;
+}
+function snapshotTime(at) {
+    return new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(at));
+}
+function mins(t, at) { var diff = (Date.parse(t) - (at || Date.now())) / 60000; if (!Number.isFinite(diff) || diff < -.6)
     return null; return diff < .75 ? 'Now' : String(Math.ceil(diff)); }
 function get(path) {
     return __awaiter(this, void 0, void 0, function () { var r, e; return __generator(this, function (_a) {
@@ -577,7 +593,7 @@ function reachClass(when, walk, jog) {
     // Classify against the SAME whole-minute value shown on screen.
     // Green: walking time is sufficient. Amber: a moderate jog may make it.
     // Gray: even a moderate jog is unlikely to make it.
-    var eta = (Date.parse(when) - Date.now()) / 60000;
+    var eta = (Date.parse(when) - (departureDisplayTime || Date.now())) / 60000;
     if (!Number.isFinite(eta) || eta <= 0)
         return 'reachable-late';
     var displayedMinutes = Math.ceil(eta);
@@ -593,19 +609,19 @@ function compactText(text, max) {
     return t.length > max ? t.slice(0, max - 1).replace(/\s+\S*$/, '') + '…' : t;
 }
 function stationHTML(dir) {
-    var list = predictions.filter(function (p) { return p.route === 'Green-E' && p.dir === dir && mins(p.when) !== null; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
+    var list = predictions.filter(function (p) { return p.route === 'Green-E' && p.dir === dir && mins(p.when, departureDisplayTime) !== null; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
     var dest = destination('Green-E', dir) || (dir === 0 ? 'Heath Street' : 'Medford/Tufts');
     // Use the same rows and countdown styling as the bus destination cards.
     var info = "<div class=\"pill train\">E</div><div class=\"arrival-info\"><div class=\"arrival-stop\">".concat(esc(dest), "</div><div class=\"stop\">Magoun Square</div><div class=\"walk-note\">About ").concat(TRAIN.walk, " min walk</div></div>");
     if (!list.length)
         return "<div class=\"destination-card train-arrivals\"><div class=\"bus-arrival\">".concat(info, "<div class=\"count\"><div class=\"count-content\"><span class=\"num\">\u2014</span><span class=\"unit\">No predictions</span></div></div></div></div>");
-    return "<div class=\"destination-card train-arrivals\">".concat(list.map(function (p) { var _a; return "<div class=\"bus-arrival\">".concat(info, "<div class=\"count ").concat(reachClass(p.when, TRAIN.walk, TRAIN.jog), "\"><div class=\"count-content\"><span class=\"num\">").concat((_a = mins(p.when)) !== null && _a !== void 0 ? _a : '—', "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div></div>"); }).join(''), "</div>");
+    return "<div class=\"destination-card train-arrivals\">".concat(list.map(function (p) { var _a; return "<div class=\"bus-arrival\">".concat(info, "<div class=\"count ").concat(reachClass(p.when, TRAIN.walk, TRAIN.jog), "\"><div class=\"count-content\"><span class=\"num\">").concat((_a = mins(p.when, departureDisplayTime)) !== null && _a !== void 0 ? _a : '—', "</span><span class=\"unit\">").concat(mins(p.when, departureDisplayTime) === 'Now' ? 'arriving' : 'min', "</span></div></div></div>"); }).join(''), "</div>");
 }
 function goalHTML(goal) {
-    var list = predictions.filter(function (p) { return p.goal === goal && mins(p.when) !== null; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
+    var list = predictions.filter(function (p) { return p.goal === goal && mins(p.when, departureDisplayTime) !== null; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
     if (!list.length)
         return '<div class="empty">No upcoming predictions</div>';
-    return list.map(function (p) { return "<div class=\"bus-arrival\"><div class=\"pill\">".concat(esc(p.route), "</div><div class=\"arrival-info\"><div class=\"arrival-stop\">").concat(esc(p.route === '89' && goal === 'davis' ? 'Davis Station' : destination(p.route, p.direction) || (goal === 'davis' ? 'Davis Square' : 'Sullivan Square')), "</div><div class=\"stop\">").concat(esc(p.stopName), "</div><div class=\"walk-note\">About ").concat(p.walk, " min walk</div></div><div class=\"count ").concat(reachClass(p.when, p.walk, p.jog), "\"><div class=\"count-content\"><span class=\"num\">").concat(mins(p.when), "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div></div>"); }).join('');
+    return list.map(function (p) { return "<div class=\"bus-arrival\"><div class=\"pill\">".concat(esc(p.route), "</div><div class=\"arrival-info\"><div class=\"arrival-stop\">").concat(esc(p.route === '89' && goal === 'davis' ? 'Davis Station' : destination(p.route, p.direction) || (goal === 'davis' ? 'Davis Square' : 'Sullivan Square')), "</div><div class=\"stop\">").concat(esc(p.stopName), "</div><div class=\"walk-note\">About ").concat(p.walk, " min walk</div></div><div class=\"count ").concat(reachClass(p.when, p.walk, p.jog), "\"><div class=\"count-content\"><span class=\"num\">").concat(mins(p.when, departureDisplayTime), "</span><span class=\"unit\">").concat(mins(p.when, departureDisplayTime) === 'Now' ? 'arriving' : 'min', "</span></div></div></div>"); }).join('');
 }
 function isActivePeriod(period, now) {
     return Date.parse(period.start) <= now && (!period.end || Date.parse(period.end) > now);
@@ -670,23 +686,23 @@ function upcomingPanel() {
         var dateTab = a.dates ? '<span class="alert-banner alert-dates">' + esc(a.dates) + '</span>' : '';
         var stopTab = segment ? '<span class="alert-banner alert-stops">' + esc(segment) + '</span>' : '';
         var activeTint = { Red: '#fce9e8', Orange: '#fff0dc', Blue: '#e6eefb', Green: '#e5f3eb' };
-        var cardStyle = a.active ? ' style="background-color:' + (activeTint[line] || '#edf1f5') + ';"' : '';
+        var cardStyle = a.active && !alertsError ? ' style="background-color:' + (activeTint[line] || '#edf1f5') + ';"' : '';
         var image = typeof a.image === 'string' && /^https:\/\//i.test(a.image) ? a.image : '';
         var alt = a.imageAlt || bannerLabel + ' disruption map';
         var thumbnail = image ? '<button class="alert-thumbnail" type="button" aria-label="Enlarge disruption image"><img src="' +
             esc(image) + '" alt="' + esc(alt) + '"></button>' : '';
         return '<div class="alert-item' + (image ? ' alert-with-image' : '') + '"' + cardStyle + '><div class="alert-copy">' +
-            '<div class="alert-banner-wrap"><span class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</span>' + dateTab + stopTab + activeTab + '</div>' +
+            '<div class="alert-banner-wrap"><span class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</span>' + dateTab + stopTab + (alertsError ? '' : activeTab) + '</div>' +
             '<div class="alert-body"><div class="alert-head">' + esc(bodyText) + '</div></div></div>' + thumbnail + '</div>';
     }).join('');
     if (!items) {
         items = '<div class="alert-empty">' +
-            (!alertsLoaded ? 'Checking upcoming subway service changes…' : alertsError ? 'Service updates unavailable: ' + esc(alertsError) : 'No active or upcoming shuttle buses or subway suspensions reported.') +
+            (!alertsLoaded ? 'Checking upcoming subway service changes…' : alertsError && !alertLastFetch ? 'Live service updates temporarily unavailable' : 'No active or upcoming shuttle buses or subway suspensions reported.') +
             '</div>';
     }
     return '<aside class="alert-panel" aria-label="Active and upcoming subway service alerts">' +
         '<div class="alert-heading"><div class="alert-title">Service Disruptions</div><div class="alert-sub">Active and upcoming</div></div>' +
-        '<div class="alert-list">' + items + '</div>' +
+        '<div class="alert-list">' + (alertsError && alertLastFetch ? '<div class="alert-empty">Last updated ' + esc(snapshotTime(alertLastFetch)) + ' · Saved service disruptions</div>' : '') + items + '</div>' +
         '<div class="alert-more"><a href="https://www.mbta.com/alerts/subway" target="_blank" rel="noopener">View all MBTA subway alerts</a><span class="refresh-caption">Refreshed every 30m</span></div>' +
         '</aside>';
 }
@@ -728,6 +744,7 @@ function updateAlerts() {
                     alertsLoaded = true;
                     alertsError = '';
                     alertLastFetch = Date.now();
+                    saveSnapshot(alertKey, alertLastFetch, upcomingAlerts);
                     alertNextRetry = 0;
                     return [3 /*break*/, 5];
                 case 3:
@@ -774,6 +791,7 @@ function render() {
     var clockText = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' }).format(new Date());
     $('clock').innerHTML = esc(clockText).replace(':', '<span class="clock-separator">:</span>');
     var previousAlertList = $('groups').querySelector('.alert-list');
+    departureDisplayTime = departuresStale ? lastSuccess : 0;
     var alertScrollTop = previousAlertList ? previousAlertList.scrollTop : 0;
     $('groups').innerHTML =
       '<section class="arrivals-column arrivals-panel" aria-label="Transit departures">' +
@@ -795,12 +813,8 @@ function render() {
     $('groups').querySelector('.alert-list').scrollTop = alertScrollTop;
     alignCountdowns();
     var s = $('status');
-    if (nextRetry > Date.now()) {
-        s.textContent = 'API paused · retry in ' + Math.ceil((nextRetry - Date.now()) / 1000) + 's';
-        s.className = 'status error';
-    }
-    else if (setupError) {
-        s.textContent = setupError;
+    if (departuresStale || setupError) {
+        s.textContent = lastSuccess ? 'Last updated ' + snapshotTime(lastSuccess) + ' · Saved departures' : 'Live departures temporarily unavailable';
         s.className = 'status error';
     }
     else if (lastSuccess) {
@@ -872,6 +886,8 @@ function update() {
                     }
                     predictions = next;
                     lastSuccess = Date.now();
+                    departuresStale = false;
+                    saveSnapshot(departureKey, lastSuccess, predictions);
                     nextRetry = 0;
                     errorCount = 0;
                     setupError = '';
@@ -879,6 +895,7 @@ function update() {
                 case 3:
                     e_2 = _p.sent();
                     errorCount++;
+                    departuresStale = true;
                     nextRetry = Date.now() + (e_2.status === 429 ? Math.min(600000, 60000 * Math.pow(2, Math.min(errorCount - 1, 3))) : 30000);
                     if (!lastSuccess)
                         setupError = e_2.message;
@@ -892,8 +909,36 @@ function update() {
         });
     });
 }
+function refreshDepartures() {
+    if (targets.length) return update();
+    if (initializing || document.hidden || Date.now() < nextRetry) return;
+    initializing = true;
+    initialize().then(function () {
+        initializing = false;
+        return update();
+    }).catch(function (error) {
+        initializing = false;
+        departuresStale = true;
+        setupError = error.message;
+        nextRetry = Date.now() + (error.status === 429 ? 120000 : 30000);
+        render();
+    });
+}
+var savedDepartures = loadSnapshot(departureKey);
+if (savedDepartures) {
+    predictions = savedDepartures.rows;
+    lastSuccess = savedDepartures.at;
+    departuresStale = true;
+}
+var savedAlerts = loadSnapshot(alertKey);
+if (savedAlerts) {
+    upcomingAlerts = savedAlerts.rows;
+    alertLastFetch = savedAlerts.at;
+    alertsLoaded = true;
+    alertsError = 'cached';
+}
 render();
-initialize().then(update).catch(function (e) { setupError = e.message; render(); });
+refreshDepartures();
 updateAlerts();
 var openImageButton;
 function closeAlertImage() {
@@ -924,10 +969,10 @@ document.addEventListener('keydown', function (event) {
 });
 setInterval(render, 15000);
 window.addEventListener('resize', alignCountdowns);
-setInterval(update, 30000);
+setInterval(refreshDepartures, 30000);
 setInterval(updateAlerts, ALERT_REFRESH_MS);
 document.addEventListener('visibilitychange', function () { if (!document.hidden) {
-    update();
+    refreshDepartures();
     updateAlerts();
 } });
 
