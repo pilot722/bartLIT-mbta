@@ -275,6 +275,25 @@ h1{font-size:38px}
  .alert-panel .alert-more{padding:9px 12px;}
 }
 
+
+/* Make inbound Green Line the primary visual focus without changing data behavior. */
+.arrivals-column .green-group{position:relative;}
+.groups .green-group h2{background:#007b39;color:#fff;font-size:17px;padding:13px 17px;letter-spacing:.025em;}
+.green-group .train-arrivals{background:#f4faf6;border:2px solid #00843d;border-top:0;box-shadow:0 3px 9px rgba(0,88,44,.14);}
+.green-group .train-arrivals .bus-arrival{background:#f4faf6;border-bottom:1px solid #cce4d4;}
+.green-group .train-arrivals .bus-arrival:last-child{border-bottom:0;}
+.green-group .train-arrivals .arrival-stop{font-size:19px;font-weight:800;color:#123f2b;}
+.green-group .train-arrivals .count .num{font-size:37px;font-weight:800;}
+.green-group .train-arrivals .pill.train{background:#00843d;color:#fff;}
+/* Keep buses secondary and compact. */
+@media screen and (orientation:landscape) and (min-width:761px){
+  .groups .green-group h2{font-size:15px;padding:10px 13px;}
+  .green-group .train-arrivals .bus-arrival{min-height:77px;padding:10px 12px;}
+  .green-group .train-arrivals .arrival-stop{font-size:17px;line-height:1.15;}
+  .green-group .train-arrivals .count .num{font-size:34px;}
+  .green-group .train-arrivals .pill.train{font-size:18px;min-width:38px;width:38px;margin-right:14px;}
+}
+
 </style>
 </head>
 <body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><div class="sub">Bartlett Street <span class="sub-dot">·</span> Somerville</div><h1>Arrivals</h1></div></div><div class="header-meta"><div class="date" id="date">—</div><div class="clock" id="clock">--:--</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div><div class="footer"><span>Live MBTA predictions · refreshed every 30 seconds</span><span><button id="retry">Refresh now</button> · <a href="https://www.mbta.com/" target="_blank" rel="noopener">MBTA</a></span></div></main>
