@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1"><meta name="theme-color" content="#102e4b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Bartlett Street | Arrivals</title>
 <style>
-:root{color-scheme:light;--blue:#165c96;--navy:#102e4b;--green:#00843d;--bus:#f2b323;--ink:#172533;--muted:#526476;--line:#d6dee5;--bg:#edf1f4}
+:root{color-scheme:light;--blue:#165c96;--navy:#102e4b;--panel-heading:#24577e;--green:#00843d;--bus:#f2b323;--ink:#172533;--muted:#526476;--line:#d6dee5;--bg:#edf1f4}
 *{box-sizing:border-box}
 html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
 main{max-width:1320px;margin:auto;padding:0 clamp(14px,2.8vw,34px) 24px}
@@ -247,7 +247,7 @@ header{margin:0 -22px 22px;padding:18px 22px}
 
 /* Service disruptions: strong title and separated, compact line tabs (Safari 10 safe). */
 .alert-panel{background:#eef2f5;border-top:0;}
-.alert-panel .alert-heading{background:#163d60;color:#fff;border-bottom:0;padding:17px 19px 16px;}
+.alert-panel .alert-heading{background:var(--panel-heading);color:#fff;border-bottom:0;padding:17px 19px 16px;}
 .alert-panel .alert-title{color:#fff;font-weight:800;font-size:20px;line-height:1.2;margin:0 0 5px;}
 .alert-panel .alert-sub{color:#dce7f0;font-size:12px;letter-spacing:.03em;}
 .alert-list{background:#eef2f5;padding:12px 12px 2px;}
@@ -255,7 +255,8 @@ header{margin:0 -22px 22px;padding:18px 22px}
 .alert-banner-wrap{padding:12px 14px 0;}
 .alert-banner{display:inline-block;padding:6px 12px;border-radius:3px;font-size:12px;line-height:1.2;color:#fff;font-weight:800;letter-spacing:.035em;}
 .alert-banner-wrap .alert-banner{margin:0 4px 4px 0;max-width:100%;}
-.alert-banner-wrap .alert-dates{background:#d5dfe8;color:#263d51;text-transform:none;}
+.alert-banner-wrap .alert-dates{background:#334e65;color:#fff;text-transform:none;}
+.alert-banner-wrap .alert-active{background:#fff3b0;color:#263d51;text-transform:none;}
 .alert-banner-wrap .alert-stops{background:#e5ebf0;color:#334b61;text-transform:none;}
 .alert-body{padding:10px 14px 14px;}
 .alert-panel .alert-head{line-height:1.42;}
@@ -300,7 +301,7 @@ html,body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   background:#eef2f5;border:1px solid var(--line);border-radius:4px;
   overflow:hidden;box-shadow:0 2px 4px rgba(15,49,83,.08);
 }
-.arrivals-heading{background:#163d60;color:#fff;padding:13px 16px;border-bottom:1px solid #315673;}
+.arrivals-heading{background:var(--panel-heading);color:#fff;padding:13px 16px;border-bottom:1px solid #315673;}
 
 .arrivals-panel-title{color:#fff;font-size:17px;font-weight:800;line-height:1.2}
 .arrivals-heading .status{font-size:11px;text-align:left;margin-top:4px;}
@@ -337,8 +338,8 @@ html,body{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 }
 
 header .brand{gap:0;}
-header .brand .t-roundel{margin-right:12px;}
-@media(max-width:650px){header .brand .t-roundel{margin-right:8px;}}
+header .brand .t-roundel{margin-right:7px;}
+@media(max-width:650px){header .brand .t-roundel{margin-right:5px;}}
 header .header-primary{margin:0;font-size:30px;font-weight:750;line-height:1.04;letter-spacing:-.035em;}
 header #clock{font-size:28px;line-height:31.2px;}
 header .header-secondary{margin:4px 0 0;color:#cbdce9;font-size:12px;font-weight:700;line-height:1.2;letter-spacing:.10em;text-transform:uppercase;}
@@ -346,7 +347,7 @@ header .header-secondary{margin:4px 0 0;color:#cbdce9;font-size:12px;font-weight
   header .header-primary{font-size:29px;}
   header #clock{font-size:27px;line-height:30.16px;}
 }
-.arrivals-panel .green-group .train-arrivals{background:#e5f3eb;border-color:#a9cdb8;}
+.arrivals-panel .green-group .train-arrivals{background:#e5f3eb;border:3px solid #00843d;border-top:0;}
 .arrivals-panel .green-group .train-arrivals .bus-arrival{background:transparent;border-bottom-color:#a9cdb8;}
 .arrivals-panel .green-group .train-arrivals .arrival-stop{color:#124e30;font-size:18px;font-weight:800;}
 </style>
@@ -627,13 +628,13 @@ function upcomingPanel() {
         var source = a.fullTitle || a.title || a.description || 'Upcoming service change';
         var bodyText = compactText(source, 280);
         var segment = affectedSegment(source) || affectedSegment(a.description);
-        var activeTab = a.active ? '<span class="alert-banner alert-dates">Active now</span>' : '';
+        var activeTab = a.active ? '<span class="alert-banner alert-active">Active now</span>' : '';
         var dateTab = a.dates ? '<span class="alert-banner alert-dates">' + esc(a.dates) + '</span>' : '';
         var stopTab = segment ? '<span class="alert-banner alert-stops">' + esc(segment) + '</span>' : '';
         var activeTint = { Red: '#fce9e8', Orange: '#fff0dc', Blue: '#e6eefb', Green: '#e5f3eb' };
         var cardStyle = a.active ? ' style="background-color:' + (activeTint[line] || '#edf1f5') + ';"' : '';
         return '<div class="alert-item"' + cardStyle + '>' +
-            '<div class="alert-banner-wrap"><span class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</span>' + activeTab + dateTab + stopTab + '</div>' +
+            '<div class="alert-banner-wrap"><span class="alert-banner" style="' + bannerStyle + '">' + esc(bannerLabel) + '</span>' + dateTab + stopTab + activeTab + '</div>' +
             '<div class="alert-body"><div class="alert-head">' + esc(bodyText) + '</div></div>' +
             '</div>';
     }).join('');
@@ -643,7 +644,7 @@ function upcomingPanel() {
             '</div>';
     }
     return '<aside class="alert-panel" aria-label="Active and upcoming subway service alerts">' +
-        '<div class="alert-heading"><div class="alert-title">Service Disruptions</div><div class="alert-sub">Active now and next 30 days</div></div>' +
+        '<div class="alert-heading"><div class="alert-title">Service Disruptions</div><div class="alert-sub">Active and upcoming</div></div>' +
         '<div class="alert-list">' + items + '</div>' +
         '<div class="alert-more"><a href="https://www.mbta.com/alerts/subway" target="_blank" rel="noopener">View all MBTA subway alerts</a><span class="refresh-caption">Refreshed every 30m</span></div>' +
         '</aside>';
