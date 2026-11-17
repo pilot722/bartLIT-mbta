@@ -135,156 +135,417 @@ header{border-bottom:5px solid #216b9d}
 .pill{border-radius:3px}
 .legend{margin-top:1px;font-size:11px}
 @media(max-width:650px){.t-roundel{width:49px;height:49px}header .sub{font-size:10px;letter-spacing:.075em}.brand{gap:10px}.groups .group h2{padding:11px 13px}.bus-arrival,.group:first-child .train-arrivals .bus-arrival{padding:12px 13px}.arrival-info .arrival-stop{font-size:15px}}
+
+/* Safari 10 fallback: flex layouts instead of CSS grid/clamp() */
+main{max-width:1480px;padding:0 22px 20px}
+header{margin:0 -22px 22px;padding:18px 22px}
+h1{font-size:38px}
+.header-meta .clock{font-size:34px}
+.groups{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;gap:0}
+.arrivals-column{display:block;width:59%;-webkit-flex:0 0 59%;flex:0 0 59%;padding-right:12px}
+.arrivals-column .group{margin-bottom:17px}
+.groups>.alert-panel{width:41%;-webkit-flex:0 0 41%;flex:0 0 41%;margin-left:0}
+.green-overview,.cards{display:block}
+.bus-arrival{display:-webkit-flex;display:flex}
+@media(max-width:760px){.groups{display:block}.arrivals-column{width:100%;padding-right:0}.groups>.alert-panel{width:100%;margin-top:15px}header{margin-bottom:16px}h1{font-size:29px}.header-meta{min-width:150px}.header-meta .clock{font-size:24px}.header-meta .date{font-size:11px}}
 </style>
 </head>
-<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><div class="sub">Bartlett Street <span class="sub-dot">·</span> Somerville</div><h1>Arrivals</h1></div></div><div class="header-meta"><div class="date" id="date">—</div><div class="clock" id="clock">--:--</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"></div><div class="footer"><span>Live MBTA predictions · refreshed every 30 seconds · walking times are approximate</span><span><button id="retry">Refresh now</button> · <a href="https://www.mbta.com/" target="_blank" rel="noopener">MBTA</a></span></div></main>
+<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><div class="sub">Bartlett Street <span class="sub-dot">·</span> Somerville</div><h1>Arrivals</h1></div></div><div class="header-meta"><div class="date" id="date">—</div><div class="clock" id="clock">--:--</div><div class="status" id="status"><span class="dot"></span> Connecting…</div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div><div class="footer"><span>Live MBTA predictions · refreshed every 30 seconds · walking times are approximate</span><span><button id="retry">Refresh now</button> · <a href="https://www.mbta.com/" target="_blank" rel="noopener">MBTA</a></span></div></main>
 <script>
-'use strict';
-const API='https://api-v3.mbta.com';
-const CACHE='bartlit_destinations_v5';
-const STOP_RULES=[
- {route:'88',match:/^highland ave @ central st$/i,dir:'davis',walk:9,jog:6},
- {route:'90',match:/^highland ave @ central st$/i,dir:'davis',walk:9,jog:6},
- {route:'90',match:/^highland ave @ central st$/i,dir:'sullivan',walk:9,jog:6},
- {route:'89',match:/^broadway @ bartlett st$/i,dir:'sullivan',walk:7,jog:6}
-];
-const TRAIN={id:'place-mgngl',route:'Green-E',walk:9,jog:6};
-let upcomingAlerts=[],alertsLoaded=false,alertsError='',alertLastFetch=0,alertNextRetry=0,alertBusy=false;
-const routeDestinations={};let targets=[],predictions=[],lastSuccess=0,nextRetry=0,errorCount=0,busy=false,setupError='';
-const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function mins(t){const diff=(Date.parse(t)-Date.now())/60000;if(!Number.isFinite(diff)||diff<-.6)return null;return diff<.75?'Now':String(Math.ceil(diff));}
-async function get(path){const r=await fetch(API+path,{headers:{Accept:'application/vnd.api+json'},cache:'no-store'});if(!r.ok){const e=new Error('MBTA API HTTP '+r.status);e.status=r.status;throw e;}return r.json();}
-function destination(route,d){return routeDestinations[route]?.[d]||''}
-function chooseDirection(route,goal){const names=routeDestinations[route]||[];
- if(route==='88'&&goal==='davis')return names.findIndex(s=>/clarendon/i.test(s));
- if(goal==='davis')return names.findIndex(s=>/davis/i.test(s));
- if(route==='90'&&goal==='sullivan')return names.findIndex(s=>/assembly|wellington|sullivan/i.test(s));
- if(goal==='sullivan')return names.findIndex(s=>/sullivan/i.test(s));
- return -1;
-}
-async function initialize(){
- try{const cached=JSON.parse(localStorage.getItem(CACHE)||'null');if(cached&&Date.now()-cached.at<7*86400000&&cached.targets?.length===4&&cached.routes){Object.assign(routeDestinations,cached.routes);targets=cached.targets;return;}}catch(e){}
- const results=await Promise.all([
-  get('/stops?'+new URLSearchParams({'filter[route]':'88,90','page[limit]':'500'})),
-  get('/stops?'+new URLSearchParams({'filter[route]':'89','page[limit]':'500'})),
-  ...['88','89','90','Green-E'].map(r=>get('/routes/'+r))
- ]);
- for(let i=0;i<4;i++)routeDestinations[['88','89','90','Green-E'][i]]=results[i+2].data.attributes.direction_destinations||[];
- const stops=[...results[0].data,...results[1].data];
- targets=STOP_RULES.map(rule=>{const candidates=stops.filter(s=>rule.match.test(s.attributes?.name||''));
- const dir=chooseDirection(rule.route,rule.dir);
- // Only use stops that are served by this route in the requested direction.
- const selected=candidates.find(s=>s.relationships?.route?.data?.id===rule.route)||candidates[0];
- if(!selected||dir<0)throw new Error('Could not identify '+rule.route+' toward '+rule.dir+'; verify MBTA stop data');
- return {route:rule.route,stop:selected.id,direction:dir,goal:rule.dir,walk:rule.walk,jog:rule.jog,stopName:selected.attributes.name};
- });
- try{localStorage.setItem(CACHE,JSON.stringify({at:Date.now(),targets,routes:routeDestinations}));}catch(e){}
-}
-function reachClass(when,walk,jog){
- const eta=(Date.parse(when)-Date.now())/60000;
- if(!Number.isFinite(eta))return 'reachable-late';
- // One minute of cushion for crossing streets and reaching a stop.
- if(eta>=walk+1)return 'reachable-walk';
- if(eta>=jog+1)return 'reachable-jog';
- return 'reachable-late';
-}
-function compactText(text,max=185){
- const t=String(text||'').replace(/\s+/g,' ').trim();
- return t.length>max?t.slice(0,max-1).replace(/\s+\S*$/,'')+'…':t;
-}
-function stationHTML(dir){
- const list=predictions.filter(p=>p.route==='Green-E'&&p.dir===dir).sort((a,b)=>a.timestamp-b.timestamp).slice(0,2);
- const dest=destination('Green-E',dir)||(dir===0?'Heath Street':'Medford/Tufts');
- // Use the same rows and countdown styling as the bus destination cards.
- const info=`<div class="pill train">E</div><div class="arrival-info"><div class="arrival-stop">${esc(dest)}</div><div class="stop">Magoun Square</div><div class="walk-note">About ${TRAIN.walk} min walk</div></div>`;
- if(!list.length)return `<div class="destination-card train-arrivals"><div class="bus-arrival">${info}<div class="count">—<span class="unit">No predictions</span></div></div></div>`;
- return `<div class="destination-card train-arrivals">${list.map(p=>`<div class="bus-arrival">${info}<div class="count ${reachClass(p.when,TRAIN.walk,TRAIN.jog)}"><span class="num">${mins(p.when)??'—'}</span><span class="unit">${mins(p.when)==='Now'?'arriving':'min'}</span></div></div>`).join('')}</div>`;
-}
-function goalHTML(goal){let list=predictions.filter(p=>p.goal===goal&&mins(p.when)!==null).sort((a,b)=>a.timestamp-b.timestamp).slice(0,2);
- if(!list.length)return '<div class="empty">No upcoming predictions</div>';
- return list.map(p=>`<div class="bus-arrival"><div class="pill">${esc(p.route)}</div><div class="arrival-info"><div class="arrival-stop">${esc(destination(p.route,p.direction)|| (goal==='davis'?'Davis Square':'Sullivan Square'))}</div><div class="stop">${esc(p.stopName)}</div><div class="walk-note">About ${p.walk} min walk</div></div><div class="count ${reachClass(p.when,p.walk,p.jog)}"><span class="num">${mins(p.when)}</span><span class="unit">${mins(p.when)==='Now'?'arriving':'min'}</span></div></div>`).join('');
-}
+/* Safari 10 compatibility helpers */
+if (!Number.isFinite) Number.isFinite=function(n){return typeof n==='number'&&isFinite(n);};
+if (!Array.prototype.includes) Array.prototype.includes=function(x){return this.indexOf(x)!==-1;};
+if (!Array.prototype.flatMap) Array.prototype.flatMap=function(fn,ctx){var result=[];for(var i=0;i<this.length;i++){if(i in this){var x=fn.call(ctx,this[i],i,this);if(Array.isArray(x))Array.prototype.push.apply(result,x);else result.push(x);}}return result;};
+if (!Object.assign) Object.assign=function(dst){for(var i=1;i<arguments.length;i++){var src=arguments[i]||{};for(var key in src)if(Object.prototype.hasOwnProperty.call(src,key))dst[key]=src[key];}return dst;};
+if (!window.URLSearchParams) window.URLSearchParams=function(obj){this.data=obj||{};this.toString=function(){var list=[];for(var k in this.data){if(Object.prototype.hasOwnProperty.call(this.data,k))list.push(encodeURIComponent(k)+'='+encodeURIComponent(this.data[k]));}return list.join('&');};};
+if (!window.fetch) window.fetch=function(url,opts){return new Promise(function(resolve,reject){var xhr=new XMLHttpRequest();xhr.open('GET',url,true);xhr.setRequestHeader('Accept','application/vnd.api+json');xhr.onreadystatechange=function(){if(xhr.readyState===4){resolve({ok:xhr.status>=200&&xhr.status<300,status:xhr.status,json:function(){return Promise.resolve(JSON.parse(xhr.responseText));}});}};xhr.onerror=function(){reject(new Error('Network error'));};xhr.send();});};
 
-function alertDate(start){return new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(start));}
-function lineColor(line){
- return {'Red':'#da291c','Orange':'#ed8b00','Blue':'#003da5','Green':'#00843d'}[line]||'#526476';
+window.onerror=function(msg){var n=document.getElementById('notice');if(n){n.style.display='block';n.textContent='Dashboard error: '+String(msg);}return false;};
+'use strict';
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+var API = 'https://api-v3.mbta.com';
+var CACHE = 'bartlit_destinations_v5';
+var STOP_RULES = [
+    { route: '88', match: /^highland ave @ central st$/i, dir: 'davis', walk: 9, jog: 6 },
+    { route: '90', match: /^highland ave @ central st$/i, dir: 'davis', walk: 9, jog: 6 },
+    { route: '90', match: /^highland ave @ central st$/i, dir: 'sullivan', walk: 9, jog: 6 },
+    { route: '89', match: /^broadway @ bartlett st$/i, dir: 'sullivan', walk: 7, jog: 6 }
+];
+var TRAIN = { id: 'place-mgngl', route: 'Green-E', walk: 9, jog: 6 };
+var upcomingAlerts = [], alertsLoaded = false, alertsError = '', alertLastFetch = 0, alertNextRetry = 0, alertBusy = false;
+var routeDestinations = {};
+var targets = [], predictions = [], lastSuccess = 0, nextRetry = 0, errorCount = 0, busy = false, setupError = '';
+var $ = function (id) { return document.getElementById(id); };
+var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]); }); };
+function mins(t) { var diff = (Date.parse(t) - Date.now()) / 60000; if (!Number.isFinite(diff) || diff < -.6)
+    return null; return diff < .75 ? 'Now' : String(Math.ceil(diff)); }
+function get(path) {
+    return __awaiter(this, void 0, void 0, function () { var r, e; return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch(API + path, { headers: { Accept: 'application/vnd.api+json' }, cache: 'no-store' })];
+            case 1:
+                r = _a.sent();
+                if (!r.ok) {
+                    e = new Error('MBTA API HTTP ' + r.status);
+                    e.status = r.status;
+                    throw e;
+                }
+                return [2 /*return*/, r.json()];
+        }
+    }); });
 }
-function affectedSegment(text){
- // Only show a segment explicitly named in the MBTA alert; never infer station closures.
- const t=String(text||'').replace(/\s+/g,' ').trim();
- const m=t.match(/(?:no (?:green line |red line |orange line |blue line )?trains|(?:shuttle )?buses (?:will )?replace (?:train )?service|(?:train )?service (?:is )?suspended)[^.!?]{0,100}?between\s+([^.!?;]{3,180}?)\s+and\s+([^.!?;,]{3,90})(?=[,.;!?]|$)/i);
- if(m)return `${m[1].trim()} – ${m[2].trim()}`;
- const n=t.match(/between\s+([^.!?;]{3,110}?)\s+and\s+([^.!?;,]{3,90})(?=[,.;!?]|$)/i);
- return n?`${n[1].trim()} – ${n[2].trim()}`:'';
+function destination(route, d) { var _a; return ((_a = routeDestinations[route]) === null || _a === void 0 ? void 0 : _a[d]) || ''; }
+function chooseDirection(route, goal) {
+    var names = routeDestinations[route] || [];
+    if (route === '88' && goal === 'davis')
+        return names.findIndex(function (s) { return /clarendon/i.test(s); });
+    if (goal === 'davis')
+        return names.findIndex(function (s) { return /davis/i.test(s); });
+    if (route === '90' && goal === 'sullivan')
+        return names.findIndex(function (s) { return /assembly|wellington|sullivan/i.test(s); });
+    if (goal === 'sullivan')
+        return names.findIndex(function (s) { return /sullivan/i.test(s); });
+    return -1;
 }
-function upcomingPanel(){
- let items=upcomingAlerts.slice(0,5).map(a=>{
-   const first=(a.branches||'Subway').split(' · ')[0];
-   const line=first.split(' ')[0];
-   const kind=a.effect==='Shuttle buses'?'Shuttle buses replacing trains':'Train service suspension';
-   const segment=affectedSegment(a.fullTitle+' '+a.description);
-   const source=a.fullTitle||a.title;
-   return `<div class="alert-item">
-     <div class="line-label"><span class="line-dot" style="background:${lineColor(line)}"></span>${esc(a.branches||'Subway')}</div>
-     <div class="alert-date">${esc(alertDate(a.start))}${a.timeframe?' · '+esc(compactText(a.timeframe,55)):''}</div>
-     <div class="service-label">${esc(kind)}</div>
-     ${segment?`<div class="segment"><span class="segment-label">Out-of-service segment</span><strong>${esc(compactText(segment,170))}</strong></div>`:''}
-     <div class="alert-head">${esc(compactText(source,220))}</div>
-     ${a.description?`<details class="alert-details"><summary>Full alert and affected stops</summary><p>${esc(a.description)}</p></details>`:''}
-   </div>`;
- }).join('');
- if(!items){items=`<div class="alert-empty">${!alertsLoaded?'Checking upcoming subway service changes…':alertsError?'Service updates are temporarily unavailable.':'No upcoming shuttle buses or subway suspensions reported in the next 30 days.'}</div>`;}
- return `<aside class="alert-panel" aria-label="Upcoming subway service alerts">
-  <div class="alert-heading"><div class="alert-title">Upcoming Service Alerts</div><div class="alert-sub">Shuttles & suspensions · next 30 days</div></div>
-  <div class="alert-list">${items}</div>
-  ${upcomingAlerts.length>5?`<div class="alert-indicator">Showing 5 of ${upcomingAlerts.length} scheduled changes</div>`:''}
-  <div class="alert-more"><a href="https://www.mbta.com/alerts/subway" target="_blank" rel="noopener">View all MBTA subway alerts</a></div>
- </aside>`;
+function initialize() {
+    return __awaiter(this, void 0, void 0, function () {
+        var cached, results, i, stops;
+        var _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    try {
+                        cached = JSON.parse(localStorage.getItem(CACHE) || 'null');
+                        if (cached && Date.now() - cached.at < 7 * 86400000 && ((_a = cached.targets) === null || _a === void 0 ? void 0 : _a.length) === 4 && cached.routes) {
+                            Object.assign(routeDestinations, cached.routes);
+                            targets = cached.targets;
+                            return [2 /*return*/];
+                        }
+                    }
+                    catch (e) { }
+                    return [4 /*yield*/, Promise.all(__spreadArray([
+                            get('/stops?' + new URLSearchParams({ 'filter[route]': '88,90', 'page[limit]': '500' })),
+                            get('/stops?' + new URLSearchParams({ 'filter[route]': '89', 'page[limit]': '500' }))
+                        ], __read(['88', '89', '90', 'Green-E'].map(function (r) { return get('/routes/' + r); })), false))];
+                case 1:
+                    results = _b.sent();
+                    for (i = 0; i < 4; i++)
+                        routeDestinations[['88', '89', '90', 'Green-E'][i]] = results[i + 2].data.attributes.direction_destinations || [];
+                    stops = __spreadArray(__spreadArray([], __read(results[0].data), false), __read(results[1].data), false);
+                    targets = STOP_RULES.map(function (rule) {
+                        var candidates = stops.filter(function (s) { var _a; return rule.match.test(((_a = s.attributes) === null || _a === void 0 ? void 0 : _a.name) || ''); });
+                        var dir = chooseDirection(rule.route, rule.dir);
+                        // Only use stops that are served by this route in the requested direction.
+                        var selected = candidates.find(function (s) { var _a, _b, _c; return ((_c = (_b = (_a = s.relationships) === null || _a === void 0 ? void 0 : _a.route) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.id) === rule.route; }) || candidates[0];
+                        if (!selected || dir < 0)
+                            throw new Error('Could not identify ' + rule.route + ' toward ' + rule.dir + '; verify MBTA stop data');
+                        return { route: rule.route, stop: selected.id, direction: dir, goal: rule.dir, walk: rule.walk, jog: rule.jog, stopName: selected.attributes.name };
+                    });
+                    try {
+                        localStorage.setItem(CACHE, JSON.stringify({ at: Date.now(), targets: targets, routes: routeDestinations }));
+                    }
+                    catch (e) { }
+                    return [2 /*return*/];
+            }
+        });
+    });
 }
-async function updateAlerts(){
- if(alertBusy||document.hidden||Date.now()<alertNextRetry||Date.now()-alertLastFetch<600000)return;
- alertBusy=true;
- try{
-  const qs=new URLSearchParams({'filter[route]':'Red,Orange,Blue,Green-B,Green-C,Green-D,Green-E','filter[lifecycle]':'UPCOMING,ONGOING_UPCOMING','page[limit]':'100'});
-  const result=await get('/alerts?'+qs);
-  const now=Date.now(),end=now+30*86400000;
-  upcomingAlerts=(result.data||[]).flatMap(item=>{
-   const a=item.attributes||{};
-   if(!['SHUTTLE','SUSPENSION'].includes(a.effect))return [];
-   const starts=(a.active_period||[]).map(p=>p.start).filter(Boolean).map(s=>Date.parse(s)).filter(s=>Number.isFinite(s)&&s>now&&s<=end);
-   if(!starts.length)return [];
-   const affectedRoutes=[...new Set((a.informed_entity||[]).map(e=>e.route).filter(Boolean))];
-   const affectedLines=['Red','Orange','Blue'].filter(r=>affectedRoutes.includes(r)).map(r=>r+' Line');
-   const greenBranches=affectedRoutes.filter(r=>/^Green-[BCDE]$/.test(r)).map(r=>r.slice(-1)).sort();
-   if(greenBranches.length)affectedLines.push('Green Line'+(greenBranches.length<4?' ('+greenBranches.join(', ')+')':''));
-   const kinds={SHUTTLE:'Shuttle buses',SUSPENSION:'Suspension'};
-   return [{start:new Date(Math.min(...starts)).toISOString(),title:a.short_header||a.header||a.service_effect||'Upcoming subway service change',fullTitle:a.header||a.short_header||'',description:a.description||'',timeframe:a.timeframe||'',effect:kinds[a.effect]||'',branches:affectedLines.join(' · ')||'Subway',id:item.id}];
-  }).sort((a,b)=>Date.parse(a.start)-Date.parse(b.start)).filter((a,i,array)=>array.findIndex(b=>b.id===a.id)===i);
-  alertsLoaded=true;alertsError='';alertLastFetch=Date.now();alertNextRetry=0;
- }catch(e){alertsLoaded=true;alertsError=e.message||'Unable to load service alerts';alertNextRetry=Date.now()+(e.status===429?600000:120000);}
- finally{alertBusy=false;render();}
+function reachClass(when, walk, jog) {
+    var eta = (Date.parse(when) - Date.now()) / 60000;
+    if (!Number.isFinite(eta))
+        return 'reachable-late';
+    // One minute of cushion for crossing streets and reaching a stop.
+    if (eta >= walk + 1)
+        return 'reachable-walk';
+    if (eta >= jog + 1)
+        return 'reachable-jog';
+    return 'reachable-late';
 }
-function render(){ $('date').textContent=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(new Date()); $('clock').textContent=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'}).format(new Date());
- $('groups').innerHTML=`<div class="arrivals-column"><section class="group green-group"><h2>Green Line · Inbound</h2><div class="green-overview"><div class="cards">${stationHTML(0)}</div></div></section><section class="group bus-group"><h2>Bus · To Davis Square</h2><div class="destination-card">${goalHTML('davis')}</div></section><section class="group bus-group"><h2>Bus · To Sullivan Square</h2><div class="destination-card">${goalHTML('sullivan')}</div></section><div class="legend"><span><i style="background:#08753a"></i>Time to walk</span><span><i style="background:#d59a1c"></i>Jog needed</span><span><i style="background:#98a3ad"></i>Likely missed</span></div></div>${upcomingPanel()}`;
- const s=$('status');if(nextRetry>Date.now()){s.textContent='API paused · retry in '+Math.ceil((nextRetry-Date.now())/1000)+'s';s.className='status error';}
- else if(setupError){s.textContent=setupError;s.className='status error';}
- else if(lastSuccess){s.innerHTML=`<span class="dot"></span> Updated ${Math.floor((Date.now()-lastSuccess)/1000)}s ago`;s.className='status';}
- else{s.innerHTML='<span class="dot"></span> Connecting…';s.className='status';}
+function compactText(text, max) {
+    if (max === void 0) { max = 185; }
+    var t = String(text || '').replace(/\s+/g, ' ').trim();
+    return t.length > max ? t.slice(0, max - 1).replace(/\s+\S*$/, '') + '…' : t;
 }
-async function update(){if(busy||Date.now()<nextRetry||document.hidden||!targets.length)return;busy=true;
- try{const stops=[...new Set([TRAIN.id,...targets.map(t=>t.stop)])];const qs=new URLSearchParams({'filter[stop]':stops.join(','),'filter[route]':'Green-E,88,89,90','page[limit]':'300'});
- const json=await get('/predictions?'+qs);const next=[];
- for(const item of json.data){const route=item.relationships?.route?.data?.id,stop=item.relationships?.stop?.data?.id,dir=item.attributes?.direction_id,when=item.attributes?.arrival_time||item.attributes?.departure_time;
- if(!when||mins(when)===null)continue;
- if(route==='Green-E'&&dir===0)next.push({route,dir,when,timestamp:Date.parse(when)});
- for(const t of targets){if(t.route===route&&t.stop===stop&&t.direction===dir)next.push({...t,dir,when,timestamp:Date.parse(when)});}
- }
- predictions=next;lastSuccess=Date.now();nextRetry=0;errorCount=0;setupError='';
- }catch(e){errorCount++;nextRetry=Date.now()+(e.status===429?Math.min(600000,60000*2**Math.min(errorCount-1,3)):30000);if(!lastSuccess)setupError=e.message;
- }finally{busy=false;render();}
+function stationHTML(dir) {
+    var list = predictions.filter(function (p) { return p.route === 'Green-E' && p.dir === dir; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
+    var dest = destination('Green-E', dir) || (dir === 0 ? 'Heath Street' : 'Medford/Tufts');
+    // Use the same rows and countdown styling as the bus destination cards.
+    var info = "<div class=\"pill train\">E</div><div class=\"arrival-info\"><div class=\"arrival-stop\">".concat(esc(dest), "</div><div class=\"stop\">Magoun Square</div><div class=\"walk-note\">About ").concat(TRAIN.walk, " min walk</div></div>");
+    if (!list.length)
+        return "<div class=\"destination-card train-arrivals\"><div class=\"bus-arrival\">".concat(info, "<div class=\"count\">\u2014<span class=\"unit\">No predictions</span></div></div></div>");
+    return "<div class=\"destination-card train-arrivals\">".concat(list.map(function (p) { var _a; return "<div class=\"bus-arrival\">".concat(info, "<div class=\"count ").concat(reachClass(p.when, TRAIN.walk, TRAIN.jog), "\"><span class=\"num\">").concat((_a = mins(p.when)) !== null && _a !== void 0 ? _a : '—', "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div>"); }).join(''), "</div>");
 }
-$('retry').addEventListener('click',()=>{nextRetry=0;update()});render();
-initialize().then(update).catch(e=>{setupError=e.message;render()});updateAlerts();
-setInterval(render,15000);setInterval(update,30000);setInterval(updateAlerts,600000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){update();updateAlerts();}});
+function goalHTML(goal) {
+    var list = predictions.filter(function (p) { return p.goal === goal && mins(p.when) !== null; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
+    if (!list.length)
+        return '<div class="empty">No upcoming predictions</div>';
+    return list.map(function (p) { return "<div class=\"bus-arrival\"><div class=\"pill\">".concat(esc(p.route), "</div><div class=\"arrival-info\"><div class=\"arrival-stop\">").concat(esc(destination(p.route, p.direction) || (goal === 'davis' ? 'Davis Square' : 'Sullivan Square')), "</div><div class=\"stop\">").concat(esc(p.stopName), "</div><div class=\"walk-note\">About ").concat(p.walk, " min walk</div></div><div class=\"count ").concat(reachClass(p.when, p.walk, p.jog), "\"><span class=\"num\">").concat(mins(p.when), "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div>"); }).join('');
+}
+function alertDate(start) { return new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(start)); }
+function lineColor(line) {
+    return { 'Red': '#da291c', 'Orange': '#ed8b00', 'Blue': '#003da5', 'Green': '#00843d' }[line] || '#526476';
+}
+function affectedSegment(text) {
+    // Only show a segment explicitly named in the MBTA alert; never infer station closures.
+    var t = String(text || '').replace(/\s+/g, ' ').trim();
+    var m = t.match(/(?:no (?:green line |red line |orange line |blue line )?trains|(?:shuttle )?buses (?:will )?replace (?:train )?service|(?:train )?service (?:is )?suspended)[^.!?]{0,100}?between\s+([^.!?;]{3,180}?)\s+and\s+([^.!?;,]{3,90})(?=[,.;!?]|$)/i);
+    if (m)
+        return "".concat(m[1].trim(), " \u2013 ").concat(m[2].trim());
+    var n = t.match(/between\s+([^.!?;]{3,110}?)\s+and\s+([^.!?;,]{3,90})(?=[,.;!?]|$)/i);
+    return n ? "".concat(n[1].trim(), " \u2013 ").concat(n[2].trim()) : '';
+}
+function upcomingPanel() {
+    var items = upcomingAlerts.slice(0, 5).map(function (a) {
+        var first = (a.branches || 'Subway').split(' · ')[0];
+        var line = first.split(' ')[0];
+        var kind = a.effect === 'Shuttle buses' ? 'Shuttle buses replacing trains' : 'Train service suspension';
+        var segment = affectedSegment(a.fullTitle + ' ' + a.description);
+        var source = a.fullTitle || a.title;
+        return "<div class=\"alert-item\">\n     <div class=\"line-label\"><span class=\"line-dot\" style=\"background:".concat(lineColor(line), "\"></span>").concat(esc(a.branches || 'Subway'), "</div>\n     <div class=\"alert-date\">").concat(esc(alertDate(a.start))).concat(a.timeframe ? ' · ' + esc(compactText(a.timeframe, 55)) : '', "</div>\n     <div class=\"service-label\">").concat(esc(kind), "</div>\n     ").concat(segment ? "<div class=\"segment\"><span class=\"segment-label\">Out-of-service segment</span><strong>".concat(esc(compactText(segment, 170)), "</strong></div>") : '', "\n     <div class=\"alert-head\">").concat(esc(compactText(source, 220)), "</div>\n     ").concat(a.description ? "<details class=\"alert-details\"><summary>Full alert and affected stops</summary><p>".concat(esc(a.description), "</p></details>") : '', "\n   </div>");
+    }).join('');
+    if (!items) {
+        items = "<div class=\"alert-empty\">".concat(!alertsLoaded ? 'Checking upcoming subway service changes…' : alertsError ? 'Service updates are temporarily unavailable.' : 'No upcoming shuttle buses or subway suspensions reported in the next 30 days.', "</div>");
+    }
+    return "<aside class=\"alert-panel\" aria-label=\"Upcoming subway service alerts\">\n  <div class=\"alert-heading\"><div class=\"alert-title\">Upcoming Service Alerts</div><div class=\"alert-sub\">Shuttles & suspensions \u00B7 next 30 days</div></div>\n  <div class=\"alert-list\">".concat(items, "</div>\n  ").concat(upcomingAlerts.length > 5 ? "<div class=\"alert-indicator\">Showing 5 of ".concat(upcomingAlerts.length, " scheduled changes</div>") : '', "\n  <div class=\"alert-more\"><a href=\"https://www.mbta.com/alerts/subway\" target=\"_blank\" rel=\"noopener\">View all MBTA subway alerts</a></div>\n </aside>");
+}
+function updateAlerts() {
+    return __awaiter(this, void 0, void 0, function () {
+        var qs, result, now_1, end_1, e_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (alertBusy || document.hidden || Date.now() < alertNextRetry || Date.now() - alertLastFetch < 600000)
+                        return [2 /*return*/];
+                    alertBusy = true;
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, 4, 5]);
+                    qs = new URLSearchParams({ 'filter[route]': 'Red,Orange,Blue,Green-B,Green-C,Green-D,Green-E', 'filter[lifecycle]': 'UPCOMING,ONGOING_UPCOMING', 'page[limit]': '100' });
+                    return [4 /*yield*/, get('/alerts?' + qs)];
+                case 2:
+                    result = _a.sent();
+                    now_1 = Date.now(), end_1 = now_1 + 30 * 86400000;
+                    upcomingAlerts = (result.data || []).flatMap(function (item) {
+                        var a = item.attributes || {};
+                        if (!['SHUTTLE', 'SUSPENSION'].includes(a.effect))
+                            return [];
+                        var starts = (a.active_period || []).map(function (p) { return p.start; }).filter(Boolean).map(function (s) { return Date.parse(s); }).filter(function (s) { return Number.isFinite(s) && s > now_1 && s <= end_1; });
+                        if (!starts.length)
+                            return [];
+                        var affectedRoutes = __spreadArray([], __read(new Set((a.informed_entity || []).map(function (e) { return e.route; }).filter(Boolean))), false);
+                        var affectedLines = ['Red', 'Orange', 'Blue'].filter(function (r) { return affectedRoutes.includes(r); }).map(function (r) { return r + ' Line'; });
+                        var greenBranches = affectedRoutes.filter(function (r) { return /^Green-[BCDE]$/.test(r); }).map(function (r) { return r.slice(-1); }).sort();
+                        if (greenBranches.length)
+                            affectedLines.push('Green Line' + (greenBranches.length < 4 ? ' (' + greenBranches.join(', ') + ')' : ''));
+                        var kinds = { SHUTTLE: 'Shuttle buses', SUSPENSION: 'Suspension' };
+                        return [{ start: new Date(Math.min.apply(Math, __spreadArray([], __read(starts), false))).toISOString(), title: a.short_header || a.header || a.service_effect || 'Upcoming subway service change', fullTitle: a.header || a.short_header || '', description: a.description || '', timeframe: a.timeframe || '', effect: kinds[a.effect] || '', branches: affectedLines.join(' · ') || 'Subway', id: item.id }];
+                    }).sort(function (a, b) { return Date.parse(a.start) - Date.parse(b.start); }).filter(function (a, i, array) { return array.findIndex(function (b) { return b.id === a.id; }) === i; });
+                    alertsLoaded = true;
+                    alertsError = '';
+                    alertLastFetch = Date.now();
+                    alertNextRetry = 0;
+                    return [3 /*break*/, 5];
+                case 3:
+                    e_1 = _a.sent();
+                    alertsLoaded = true;
+                    alertsError = e_1.message || 'Unable to load service alerts';
+                    alertNextRetry = Date.now() + (e_1.status === 429 ? 600000 : 120000);
+                    return [3 /*break*/, 5];
+                case 4:
+                    alertBusy = false;
+                    render();
+                    return [7 /*endfinally*/];
+                case 5: return [2 /*return*/];
+            }
+        });
+    });
+}
+function render() {
+    $('date').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
+    $('clock').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' }).format(new Date());
+    $('groups').innerHTML = "<div class=\"arrivals-column\"><section class=\"group green-group\"><h2>Green Line \u00B7 Inbound</h2><div class=\"green-overview\"><div class=\"cards\">".concat(stationHTML(0), "</div></div></section><section class=\"group bus-group\"><h2>Bus \u00B7 To Davis Square</h2><div class=\"destination-card\">").concat(goalHTML('davis'), "</div></section><section class=\"group bus-group\"><h2>Bus \u00B7 To Sullivan Square</h2><div class=\"destination-card\">").concat(goalHTML('sullivan'), "</div></section><div class=\"legend\"><span><i style=\"background:#08753a\"></i>Time to walk</span><span><i style=\"background:#d59a1c\"></i>Jog needed</span><span><i style=\"background:#98a3ad\"></i>Likely missed</span></div></div>").concat(upcomingPanel());
+    var s = $('status');
+    if (nextRetry > Date.now()) {
+        s.textContent = 'API paused · retry in ' + Math.ceil((nextRetry - Date.now()) / 1000) + 's';
+        s.className = 'status error';
+    }
+    else if (setupError) {
+        s.textContent = setupError;
+        s.className = 'status error';
+    }
+    else if (lastSuccess) {
+        s.innerHTML = "<span class=\"dot\"></span> Updated ".concat(Math.floor((Date.now() - lastSuccess) / 1000), "s ago");
+        s.className = 'status';
+    }
+    else {
+        s.innerHTML = '<span class="dot"></span> Connecting…';
+        s.className = 'status';
+    }
+}
+function update() {
+    return __awaiter(this, void 0, void 0, function () {
+        var stops, qs, json, next, _a, _b, item, route, stop, dir, when, targets_1, targets_1_1, t, e_2;
+        var e_3, _c, e_4, _d;
+        var _e, _f, _g, _h, _j, _k, _l, _m, _o;
+        return __generator(this, function (_p) {
+            switch (_p.label) {
+                case 0:
+                    if (busy || Date.now() < nextRetry || document.hidden || !targets.length)
+                        return [2 /*return*/];
+                    busy = true;
+                    _p.label = 1;
+                case 1:
+                    _p.trys.push([1, 3, 4, 5]);
+                    stops = __spreadArray([], __read(new Set(__spreadArray([TRAIN.id], __read(targets.map(function (t) { return t.stop; })), false))), false);
+                    qs = new URLSearchParams({ 'filter[stop]': stops.join(','), 'filter[route]': 'Green-E,88,89,90', 'page[limit]': '300' });
+                    return [4 /*yield*/, get('/predictions?' + qs)];
+                case 2:
+                    json = _p.sent();
+                    next = [];
+                    try {
+                        for (_a = __values(json.data), _b = _a.next(); !_b.done; _b = _a.next()) {
+                            item = _b.value;
+                            route = (_g = (_f = (_e = item.relationships) === null || _e === void 0 ? void 0 : _e.route) === null || _f === void 0 ? void 0 : _f.data) === null || _g === void 0 ? void 0 : _g.id, stop = (_k = (_j = (_h = item.relationships) === null || _h === void 0 ? void 0 : _h.stop) === null || _j === void 0 ? void 0 : _j.data) === null || _k === void 0 ? void 0 : _k.id, dir = (_l = item.attributes) === null || _l === void 0 ? void 0 : _l.direction_id, when = ((_m = item.attributes) === null || _m === void 0 ? void 0 : _m.arrival_time) || ((_o = item.attributes) === null || _o === void 0 ? void 0 : _o.departure_time);
+                            if (!when || mins(when) === null)
+                                continue;
+                            if (route === 'Green-E' && dir === 0)
+                                next.push({ route: route, dir: dir, when: when, timestamp: Date.parse(when) });
+                            try {
+                                for (targets_1 = (e_4 = void 0, __values(targets)), targets_1_1 = targets_1.next(); !targets_1_1.done; targets_1_1 = targets_1.next()) {
+                                    t = targets_1_1.value;
+                                    if (t.route === route && t.stop === stop && t.direction === dir)
+                                        next.push(__assign(__assign({}, t), { dir: dir, when: when, timestamp: Date.parse(when) }));
+                                }
+                            }
+                            catch (e_4_1) { e_4 = { error: e_4_1 }; }
+                            finally {
+                                try {
+                                    if (targets_1_1 && !targets_1_1.done && (_d = targets_1.return)) _d.call(targets_1);
+                                }
+                                finally { if (e_4) throw e_4.error; }
+                            }
+                        }
+                    }
+                    catch (e_3_1) { e_3 = { error: e_3_1 }; }
+                    finally {
+                        try {
+                            if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
+                        }
+                        finally { if (e_3) throw e_3.error; }
+                    }
+                    predictions = next;
+                    lastSuccess = Date.now();
+                    nextRetry = 0;
+                    errorCount = 0;
+                    setupError = '';
+                    return [3 /*break*/, 5];
+                case 3:
+                    e_2 = _p.sent();
+                    errorCount++;
+                    nextRetry = Date.now() + (e_2.status === 429 ? Math.min(600000, 60000 * Math.pow(2, Math.min(errorCount - 1, 3))) : 30000);
+                    if (!lastSuccess)
+                        setupError = e_2.message;
+                    return [3 /*break*/, 5];
+                case 4:
+                    busy = false;
+                    render();
+                    return [7 /*endfinally*/];
+                case 5: return [2 /*return*/];
+            }
+        });
+    });
+}
+$('retry').addEventListener('click', function () { nextRetry = 0; update(); });
+render();
+initialize().then(update).catch(function (e) { setupError = e.message; render(); });
+updateAlerts();
+setInterval(render, 15000);
+setInterval(update, 30000);
+setInterval(updateAlerts, 600000);
+document.addEventListener('visibilitychange', function () { if (!document.hidden) {
+    update();
+    updateAlerts();
+} });
 </script></body></html>
