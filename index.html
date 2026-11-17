@@ -599,7 +599,7 @@ function alertDates(periods, header) {
         var through = new Date(Date.UTC(year + (endMonth < startMonth ? 1 : 0), endMonth, Number(stated[4])));
         if (from.getUTCMonth() === startMonth && through.getUTCMonth() === endMonth && through >= from) {
             var published = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' });
-            return published.format(from) + '–' + published.format(through);
+            return published.format(from) + ' – ' + published.format(through);
         }
     }
 
@@ -608,7 +608,7 @@ function alertDates(periods, header) {
     periods.forEach(function (period) {
         var start = formatter.format(new Date(period.start));
         var end = period.end && Number.isFinite(Date.parse(period.end)) ? formatter.format(new Date(period.end)) : '';
-        var label = end && end !== start ? start + '–' + end : start;
+        var label = end && end !== start ? start + ' – ' + end : start;
         if (labels.indexOf(label) === -1)
             labels.push(label);
     });
