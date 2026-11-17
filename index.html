@@ -482,11 +482,12 @@ function mbtaQuery(params){
  return parts.join('&');
 }
 
-var CACHE = 'bartlit_destinations_safari10_v6';
+var CACHE = 'bartlit_destinations_safari10_v7';
 var STOP_RULES = [
     { route: '88', match: /^highland ave @ central st$/i, dir: 'davis', walk: 9, jog: 6 },
     { route: '90', match: /^highland ave @ central st$/i, dir: 'davis', walk: 9, jog: 6 },
     { route: '90', match: /^highland ave @ central st$/i, dir: 'sullivan', walk: 9, jog: 6 },
+    { route: '89', match: /^broadway opp glenwood rd$/i, dir: 'davis', walk: 7, jog: 6 },
     { route: '89', match: /^broadway @ bartlett st$/i, dir: 'sullivan', walk: 7, jog: 6 }
 ];
 var TRAIN = { id: 'place-mgngl', route: 'Green-E', walk: 9, jog: 6 };
@@ -519,6 +520,8 @@ function chooseDirection(route, goal) {
     var names = routeDestinations[route] || [];
     if (route === '88' && goal === 'davis')
         return names.findIndex(function (s) { return /clarendon/i.test(s); });
+    if (route === '89' && goal === 'davis')
+        return names.findIndex(function (s) { return /davis|clarendon/i.test(s); });
     if (goal === 'davis')
         return names.findIndex(function (s) { return /davis/i.test(s); });
     if (route === '90' && goal === 'sullivan')
@@ -602,7 +605,7 @@ function goalHTML(goal) {
     var list = predictions.filter(function (p) { return p.goal === goal && mins(p.when) !== null; }).sort(function (a, b) { return a.timestamp - b.timestamp; }).slice(0, 2);
     if (!list.length)
         return '<div class="empty">No upcoming predictions</div>';
-    return list.map(function (p) { return "<div class=\"bus-arrival\"><div class=\"pill\">".concat(esc(p.route), "</div><div class=\"arrival-info\"><div class=\"arrival-stop\">").concat(esc(destination(p.route, p.direction) || (goal === 'davis' ? 'Davis Square' : 'Sullivan Square')), "</div><div class=\"stop\">").concat(esc(p.stopName), "</div><div class=\"walk-note\">About ").concat(p.walk, " min walk</div></div><div class=\"count ").concat(reachClass(p.when, p.walk, p.jog), "\"><div class=\"count-content\"><span class=\"num\">").concat(mins(p.when), "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div></div>"); }).join('');
+    return list.map(function (p) { return "<div class=\"bus-arrival\"><div class=\"pill\">".concat(esc(p.route), "</div><div class=\"arrival-info\"><div class=\"arrival-stop\">").concat(esc(p.route === '89' && goal === 'davis' ? 'Davis Station' : destination(p.route, p.direction) || (goal === 'davis' ? 'Davis Square' : 'Sullivan Square')), "</div><div class=\"stop\">").concat(esc(p.stopName), "</div><div class=\"walk-note\">About ").concat(p.walk, " min walk</div></div><div class=\"count ").concat(reachClass(p.when, p.walk, p.jog), "\"><div class=\"count-content\"><span class=\"num\">").concat(mins(p.when), "</span><span class=\"unit\">").concat(mins(p.when) === 'Now' ? 'arriving' : 'min', "</span></div></div></div>"); }).join('');
 }
 function isActivePeriod(period, now) {
     return Date.parse(period.start) <= now && (!period.end || Date.parse(period.end) > now);
@@ -824,11 +827,16 @@ function update() {
                 case 1:
                     _p.trys.push([1, 3, 4, 5]);
                     stops = __spreadArray([], __read(new Set(__spreadArray([TRAIN.id], __read(targets.map(function (t) { return t.stop; })), false))), false);
-                    qs = mbtaQuery({ 'filter[stop]': stops.join(','), 'filter[route]': 'Green-E,88,89,90', 'page[limit]': '100' });
+                    qs = mbtaQuery({ 'filter[stop]': stops.join(','), 'filter[route]': 'Green-E,88,89,90', include: 'trip', 'page[limit]': '100' });
                     return [4 /*yield*/, get('/predictions?' + qs)];
                 case 2:
                     json = _p.sent();
                     next = [];
+                    var davisTrips = Object.create(null);
+                    (json.included || []).forEach(function (trip) {
+                        if (trip.type === 'trip' && trip.attributes && /\bdavis\b/i.test(trip.attributes.headsign || ''))
+                            davisTrips[trip.id] = true;
+                    });
                     try {
                         for (_a = __values(json.data), _b = _a.next(); !_b.done; _b = _a.next()) {
                             item = _b.value;
@@ -840,7 +848,9 @@ function update() {
                             try {
                                 for (targets_1 = (e_4 = void 0, __values(targets)), targets_1_1 = targets_1.next(); !targets_1_1.done; targets_1_1 = targets_1.next()) {
                                     t = targets_1_1.value;
-                                    if (t.route === route && t.stop === stop && t.direction === dir)
+                                    var tripRef = item.relationships && item.relationships.trip && item.relationships.trip.data;
+                                    if (t.route === route && t.stop === stop && t.direction === dir &&
+                                        (route !== '89' || t.goal !== 'davis' || (tripRef && davisTrips[tripRef.id])))
                                         next.push(__assign(__assign({}, t), { dir: dir, when: when, timestamp: Date.parse(when) }));
                                 }
                             }
