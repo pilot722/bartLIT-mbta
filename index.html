@@ -396,13 +396,92 @@ html.dark .theme-switch button{color:#99a8bd;}
 html.dark .theme-switch button[aria-pressed="true"]{background:#303c59;color:#fff;}
 @media(max-width:480px){.header-meta{display:flex;justify-content:space-between;}}
 .arrivals-footer,.alert-panel .alert-more{-webkit-flex-shrink:0;flex-shrink:0;}
+html.dark .alert-banner-wrap .alert-dates{background:#425d73;color:#f0f5f9;}
+html.dark .alert-banner-wrap .alert-stops{background:#314553;color:#d5e2ec;}
+html.dark .alert-banner-wrap .alert-active{background:#5a4b24;color:#ffedaa;}
+html.disco{background:#19102d;}
+html.disco body{background:linear-gradient(120deg,#381245,#102e4b,#153f39,#381245);background-size:300% 300%;animation:pride-drift 16s ease infinite;}
+html.disco header,html.disco .arrivals-heading,html.disco .alert-heading{background:repeating-linear-gradient(90deg,#a62648 0px,#805000 160px,#247347 320px,#24549e 480px,#77399a 640px,#a62648 800px);background-size:800px 100%;animation:pride-flow 24s linear infinite;}
+html.disco .arrivals-panel,html.disco .alert-panel{animation:pride-glow 8s ease-in-out infinite;}
+html.disco .t-roundel{animation:pride-spin 12s linear infinite;}
+html.disco #theme-dark{box-shadow:0 0 8px #ed85d5;}
+#theme-dark{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
+@keyframes pride-flow{from{background-position:0 0;}to{background-position:800px 0;}}
+@keyframes pride-drift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+@keyframes pride-glow{0%,100%{box-shadow:0 0 12px rgba(243,91,159,.5);}33%{box-shadow:0 0 12px rgba(99,203,180,.5);}66%{box-shadow:0 0 12px rgba(153,130,245,.5);}}
+@keyframes pride-spin{to{transform:rotate(360deg);}}
+@media(prefers-reduced-motion:reduce){html.disco body,html.disco header,html.disco .arrivals-heading,html.disco .alert-heading,html.disco .arrivals-panel,html.disco .alert-panel,html.disco .t-roundel{animation:none;}}
+#winter-scene{display:none;pointer-events:none;position:fixed;inset:0;top:0;right:0;bottom:0;left:0;overflow:hidden;z-index:9;}
+html.winter #winter-scene{display:block;}
+html.winter{--bg:#edf6fc;--panel-heading:#46758e;}
+html.winter .arrivals-panel,html.winter .alert-panel,html.winter .alert-list{background:#e5f0f7;}
+html.winter header{background:linear-gradient(120deg,#102e4b,#2b5b73);border-bottom-color:#b5dfef;}
+html.winter .arrivals-heading,html.winter .alert-heading{background:linear-gradient(110deg,#244e68,#30677d);}
+html.winter .arrivals-panel,html.winter .alert-panel{box-shadow:0 0 14px rgba(181,225,250,.35);}
+.winter-flake{position:absolute;top:-20px;color:#fff;line-height:1;animation:winter-fall linear infinite;text-shadow:0 1px 2px #668fa8,0 0 4px #8bbbd5;}
+.winter-icicle{position:absolute;top:0;width:0;height:0;border-left:11px solid transparent;border-right:9px solid transparent;border-top:42px solid rgba(177,218,241,.95);filter:drop-shadow(0 1px 1px #729bb3);}
+.winter-train{position:absolute;top:0;left:0;width:768px;height:88px;image-rendering:pixelated;animation:winter-ride 32s linear 7s infinite backwards;}
+#theme-light{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
+@keyframes winter-fall{from{transform:translate3d(0,-20px,0);}to{transform:translate3d(45px,110vh,0);}}
+@keyframes winter-ride{from{transform:translateX(-100%);}to{transform:translateX(100vw);}}
+@media(prefers-reduced-motion:reduce){html.winter .winter-flake,html.winter .winter-train{animation:none;}.winter-train{left:12px;}}
+html.winter main>header .brand,html.winter main>header .header-meta{position:relative;z-index:10;}
+.winter-train-pixels{display:block;width:100%;height:100%;image-rendering:pixelated;}
+.winter-train-logo{position:absolute;left:90.8854%;top:79.5455%;width:1.4323%;height:12.5%;transform:translate(-50%,-50%);image-rendering:auto;}
+#pride-scene{display:none;position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;overflow:hidden;z-index:9;}
+html.disco #pride-scene{display:block;}
+.disco-ball{position:absolute;top:8px;left:50%;width:34px;height:34px;border-radius:50%;background:repeating-linear-gradient(0deg,transparent 0px,transparent 5px,#617487 6px),repeating-linear-gradient(90deg,#f3faff 0px,#8faac0 5px,#dcecf4 6px);box-shadow:0 0 20px #b5d8ff;animation:ball-turn 8s linear infinite;}
+.disco-ball:before{content:"";position:absolute;bottom:100%;left:50%;height:12px;border-left:1px solid #bfcede;}
+.pride-spot{position:absolute;width:100px;height:100px;border-radius:50%;opacity:.13;animation:spot-drift 18s ease-in-out infinite alternate;}
+.pride-train{position:absolute;left:0;width:1152px;height:88px;animation:pride-train-ride 32s linear 7s infinite backwards;}
+.pride-train-image,.pride-employee{position:absolute;display:block;image-rendering:pixelated;}
+.pride-train-image{width:100%;height:100%;}
+.pride-employee{top:0;width:4.1667%;height:54.5455%;transform-origin:50% 100%;animation:passenger-dance .8s steps(2,end) infinite alternate;}
+.pride-train-logo{position:absolute;left:93.9236%;top:79.5455%;width:.9549%;height:12.5%;transform:translate(-50%,-50%);}
+@keyframes pride-train-ride{from{transform:translateX(100vw);}to{transform:translateX(-100%);}}
+.pride-confetti{position:absolute;top:10%;width:6px;height:10px;opacity:0;}
+.pride-burst .pride-confetti{animation:confetti-fall 3s ease-out both;}
+@keyframes ball-turn{0%,100%{background-position:0 0;transform:rotate(-8deg);}50%{background-position:18px 0;transform:rotate(8deg);}}
+@keyframes spot-drift{to{transform:translate(110px,140px) scale(1.7);}}
+@keyframes passenger-dance{to{transform:translateY(-5px) rotate(12deg);}}
+@keyframes confetti-fall{0%{opacity:0;transform:translateY(-20px) rotate(0);}15%{opacity:.9;}100%{opacity:0;transform:translateY(70vh) rotate(540deg);}}
+@keyframes pride-sparkle{0%,100%{opacity:.25;}50%{opacity:1;}}
+@media(prefers-reduced-motion:reduce){#pride-scene *,html.disco .brand:after{animation:none!important;}.pride-train{left:12px;}}
+#theme-dark .theme-disco-ball{position:relative;top:auto;left:auto;width:17px;height:17px;box-shadow:0 0 5px #b5d8ff;}
+#theme-dark .theme-disco-ball:before{display:none;}
+
+.system-map{position:fixed;z-index:30;top:2vh;left:2vw;width:96vw;height:96vh;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;box-shadow:0 0 0 3vw rgba(7,16,25,.85);}
+.system-map[hidden]{display:none;}
+.map-toolbar{display:flex;align-items:center;padding:10px 14px;background:var(--panel-heading);color:#fff;flex-shrink:0;}
+.map-title{font-weight:700;font-size:17px;flex:1;}
+.map-toolbar button{margin-left:7px;min-width:34px;min-height:34px;}
+.map-close{font-size:24px;line-height:1;}
+.map-status{font-size:11px;padding:6px 12px;min-height:25px;flex-shrink:0;}
+.map-canvas-wrap{position:relative;flex:1 1 0%;min-height:0;overflow:hidden;}
+#system-map-canvas{position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:none;}
+.map-legend{padding:7px 12px;font-size:11px;flex-shrink:0;}
+.map-legend span{display:inline-block;margin-right:12px;}
+.map-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
+html.disco .map-toolbar{background:repeating-linear-gradient(90deg,#a62648 0px,#805000 160px,#247347 320px,#24549e 480px,#77399a 640px,#a62648 800px);background-size:800px 100%;animation:pride-flow 24s linear infinite;}
+html.winter .map-toolbar{background:#46758e;}
+header .t-roundel{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;cursor:pointer;}
+
+.map-legend{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+.map-line-key{flex:1 1 auto;}
+.map-legend .map-credit{margin:0 0 0 12px;white-space:nowrap;}
 </style>
 </head>
-<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><h1 class="header-primary">34 Bartlett Street</h1><div class="header-secondary">Somerville</div></div></div><div class="header-meta"><div class="header-time"><div class="header-primary" id="clock">--:--</div><div class="header-secondary" id="date">—</div></div><div class="header-controls"><button id="hard-refresh" type="button"><svg class="refresh-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M20 12a8 8 0 1 0-2.3 5.7"/></svg>Refresh</button><div class="theme-switch" role="group" aria-label="Color mode"><button id="theme-light" type="button" aria-label="Light mode" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 1v2m0 18v2M1 12h2m18 0h2M4.2 4.2l1.4 1.4m12.8 12.8 1.4 1.4M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></button><button id="theme-auto" type="button" aria-label="Automatic sunset mode" aria-pressed="false">AUTO</button><button id="theme-dark" type="button" aria-label="Dark mode" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13.2A9 9 0 0 1 10.8 3.1 9 9 0 1 0 20.9 13.2Z"/></svg></button></div></div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div></main>
+<body><main><header><div class="brand"><svg class="t-roundel" viewBox="0 0 64 64" role="img" aria-label="T roundel" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="29.3" fill="#fff" stroke="#111" stroke-width="2.8"/><path d="M11.8 17.7H52.2V27.9H37.1V52.6H26.9V27.9H11.8Z" fill="#111"/></svg><div><h1 class="header-primary">34 Bartlett Street</h1><div class="header-secondary">Somerville</div></div></div><div class="header-meta"><div class="header-time"><div class="header-primary" id="clock">--:--</div><div class="header-secondary" id="date">—</div></div><div class="header-controls"><button id="hard-refresh" type="button"><svg class="refresh-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M20 12a8 8 0 1 0-2.3 5.7"/></svg>REFRESH</button><div class="theme-switch" role="group" aria-label="Color mode"><button id="theme-light" type="button" aria-label="Light mode" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 1v2m0 18v2M1 12h2m18 0h2M4.2 4.2l1.4 1.4m12.8 12.8 1.4 1.4M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></button><button id="theme-auto" type="button" aria-label="Automatic sunset mode" aria-pressed="false">AUTO</button><button id="theme-dark" type="button" aria-label="Dark mode" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13.2A9 9 0 0 1 10.8 3.1 9 9 0 1 0 20.9 13.2Z"/></svg></button></div></div></div></header><div class="setup" id="notice"></div><div class="groups" id="groups"><div style="padding:24px;background:#fff;color:#172533;width:100%">Loading arrivals and service alerts…</div></div></main>
 <div id="alert-image-viewer" class="alert-image-viewer" role="dialog" aria-modal="true" aria-label="Disruption image" hidden>
 <button id="alert-image-close" class="alert-image-close" type="button" aria-label="Close image">×</button>
 <img id="alert-image-full" alt="">
 </div>
+<section id="system-map" class="system-map" role="dialog" aria-modal="true" aria-label="Live MBTA subway and Silver Line map" hidden>
+<div class="map-toolbar"><div class="map-title">Live Transit Map</div><button id="map-minus" type="button" aria-label="Zoom out">−</button><button id="map-plus" type="button" aria-label="Zoom in">+</button><button id="map-reset" type="button">Fit</button><button id="map-close" class="map-close" type="button" aria-label="Close map">×</button></div>
+<div id="map-status" class="map-status" aria-live="polite">Loading map…</div>
+<div class="map-canvas-wrap"><canvas id="system-map-canvas" aria-label="Subway routes, stations and reported train positions. Drag to pan, pinch to zoom, and tap a train for details."></canvas></div>
+<div class="map-legend"><div class="map-line-key"><span><i style="background:#da291c"></i>Red</span><span><i style="background:#ed8b00"></i>Orange</span><span><i style="background:#4384ed"></i>Blue</span><span><i style="background:#00843d"></i>Green</span><span><i style="background:#b22e48"></i>Mattapan</span><span><i style="background:#8797a5"></i>Silver</span></div><span class="map-credit">Simplified geography</span></div>
+</section>
 <script>
 /* Safari 10 compatibility helpers */
 if (!Number.isFinite) Number.isFinite=function(n){return typeof n==='number'&&isFinite(n);};
@@ -835,17 +914,855 @@ function solarDay(now) {
         sunset: midnight + (noon + 4 * hourAngle) * 60000 };
 }
 var themeMode = 'auto';
-try {
-    var savedMode = localStorage.getItem('bartlit_theme');
-    if (['auto', 'light', 'dark'].indexOf(savedMode) !== -1) themeMode = savedMode;
-} catch (error) {}
+var prideColors = ['#ed4961', '#ed963c', '#e9cb4d', '#44ad79', '#4b8fe0', '#a56ddb'];
+var walkableTrainKeys = [], prideBurstTimer;
+function trainLogos(carCount, className, labels) {
+    var logos = '';
+    for (var car = 0; car < carCount; car++) {
+        var center = 47;
+        var left = (car * 96 + center) / (carCount * 96) * 100;
+        var diameter = 5.5;
+        var width = diameter / (carCount * 96) * 100;
+        var letter = labels ? labels.charAt(car) : 'T';
+        var top = labels ? (car === carCount - 1 ? 73.8636 : 78.4091) : 79.5455;
+        var height = diameter / 44 * 100;
+        var lettering = letter === 'T' ? '<path d="M12 18h40v10H37v24H27V28H12Z" fill="#111"/>' :
+            '<text x="32" y="48" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="45" font-weight="900" fill="#111" stroke="#111" stroke-width="0.8" stroke-linejoin="round">' + letter + '</text>';
+        logos += '<svg class="' + className + '" style="left:' + left + '%;width:' + width +
+            '%;top:' + top + '%;height:' + height + '%" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="#fff" stroke="#111" stroke-width="3"/>' + lettering + '</svg>';
+    }
+    return logos;
+}
+function buildPrideScene() {
+    var scene = document.createElement('div');
+    scene.id = 'pride-scene';
+    scene.setAttribute('aria-hidden', 'true');
+    var html = '';
+    for (var i = 0; i < 8; i++)
+        html += '<span class="pride-spot" style="left:' + (i * 31 % 90) + '%;top:' +
+            (i * 23 % 80) + '%;background:' + prideColors[i % 6] + ';animation-delay:-' + i * 2 + 's"></span>';
+    var canvas = document.createElement('canvas');
+    canvas.width = 576; canvas.height = 44;
+    var ctx = canvas.getContext('2d');
+    function block(color, x, y, width, height) { ctx.fillStyle = color; ctx.fillRect(x, y, width, height); }
+    // Train travels left, with the red car leading.
+    var carColors = ['#c52632', '#ed963c', '#edcb38', '#249659', '#246ac1', '#8849aa'];
+    function windows(offset, start, count, spacing, width, top, height) {
+        for (var windowIndex = 0; windowIndex < count; windowIndex++)
+            block('#163e58', offset + start + windowIndex * spacing, top, width, height);
+    }
+    function railWheels(offset) {
+        block('#18242f', offset + 14, 39, 6, 2);
+        block('#18242f', offset + 74, 39, 6, 2);
+    }
+    for (var car = 0; car < 6; car++) {
+        var offset = car * 96;
+        ctx.save();
+        if (car === 0 || car === 1 || car === 4) {
+            block('#d9dedc', offset + 2, 23, 90, 17);
+            block(carColors[car], offset + 2, 31, 90, 7);
+            block('#a2aba8', offset + 5, 21, 84, 3);
+            windows(offset, 7, 7, 12, 8, 25, 5);
+            railWheels(offset);
+            if (car === 0) block('#fff', offset, 29, 4, 3);
+        } else if (car === 2) {
+            // Separate window bays and door frames, with no overlapping mullions.
+            block('#c9cfd4', offset + 3, 23, 88, 17);
+            block('#f1f2ef', offset + 8, 21, 76, 3);
+            block('#151e25', offset + 3, 24, 87, 7);
+            block('#508fb1', offset + 3, 31, 88, 1);
+            block('#e6b51e', offset + 3, 32, 88, 6);
+            block('#22272c', offset + 3, 38, 88, 1);
+            block('#243f50', offset + 4, 25, 7, 5);
+            block('#bfc9cf', offset + 12, 24, 2, 14);
+            block('#243f50', offset + 15, 25, 5, 10);
+            block('#bfc9cf', offset + 21, 24, 2, 14);
+            windows(offset, 25, 5, 13, 10, 25, 5);
+            block('#f3ead0', offset + 3, 35, 2, 2);
+            block('#1b242d', offset + 15, 36, 8, 6);
+            block('#1b242d', offset + 73, 36, 8, 6);
+            block('#697782', offset + 17, 38, 4, 2);
+            block('#697782', offset + 75, 38, 4, 2);
+            block('#353c43', offset + 86, 33, 4, 3);
+        } else if (car === 3) {
+            // Door windows and passenger windows occupy distinct bays.
+            block('#d9dedc', offset + 6, 23, 83, 15);
+            block('#178147', offset + 5, 31, 85, 8);
+            block('#a2aba8', offset + 9, 21, 76, 2);
+            block('#204b3b', offset + 2, 26, 4, 12);
+            block('#244335', offset + 90, 26, 3, 12);
+            block('#173d3c', offset + 7, 25, 7, 5);
+            block('#b5c4bb', offset + 16, 24, 10, 14);
+            block('#173d3c', offset + 17, 25, 3, 5);
+            block('#173d3c', offset + 22, 25, 3, 5);
+            windows(offset, 29, 2, 15, 12, 25, 5);
+            block('#5b6862', offset + 59, 23, 5, 16);
+            block('#8f9b94', offset + 60, 23, 1, 16);
+            block('#8f9b94', offset + 62, 23, 1, 16);
+            block('#173d3c', offset + 67, 25, 10, 5);
+            block('#b5c4bb', offset + 80, 24, 9, 14);
+            block('#173d3c', offset + 81, 25, 3, 5);
+            block('#173d3c', offset + 85, 25, 3, 5);
+            block('#70817a', offset + 33, 19, 8, 2);
+            block('#70817a', offset + 68, 19, 8, 2);
+            block('#52646d', offset + 35, 16, 2, 3);
+            block('#52646d', offset + 32, 15, 8, 1);
+            block('#eaecdc', offset + 4, 33, 2, 2);
+            railWheels(offset);
+        } else {
+            // Bi-level coach: purple and gold band between the two window decks.
+            block('#c9cfd6', offset + 3, 23, 89, 17);
+            block('#87939e', offset + 9, 21, 77, 2);
+            windows(offset, 17, 6, 11, 8, 24, 4);
+            block('#d7b344', offset + 3, 28, 89, 1);
+            block('#884279', offset + 3, 29, 89, 7);
+            block('#d7b344', offset + 3, 36, 89, 1);
+            windows(offset, 17, 6, 11, 8, 37, 2.5);
+            block('#aebac4', offset + 6, 25, 6, 14);
+            block('#aebac4', offset + 83, 25, 6, 14);
+            block('#163e58', offset + 7, 26, 4, 5);
+            block('#163e58', offset + 84, 26, 4, 5);
+            railWheels(offset);
+        }
+        if (car < 5) block('#65727d', offset + 92, 34, 6, 3);
+        ctx.restore();
+    }
+    html += '<div class="pride-train"><img class="pride-train-image" alt="" src="' + canvas.toDataURL() + '">';
+    for (var staffIndex = 0; staffIndex < 6; staffIndex++) {
+        var staff = 5 - staffIndex;
+        var person = document.createElement('canvas');
+        person.width = 24; person.height = 24;
+        var pen = person.getContext('2d');
+        function pixel(color, x, y, width, height) { pen.fillStyle = color; pen.fillRect(x, y, width, height); }
+        var skin = ['#edc1a0', '#a56945', '#d89b70'][staff % 3];
+        var shirt = ['#66784b', '#29272c', '#e9a338', '#254a78', '#b55237', '#214665'][staff];
+        pixel(skin, 9, 7, 7, 5);
+        pixel(shirt, 7, 12, 11, 7);
+        pixel(shirt, 3, 9, 4, 5); pixel(shirt, 18, 10, 4, 4);
+        pixel(skin, 3, 7, 3, 3); pixel(skin, 20, 8, 3, 3);
+        pixel('#162c42', 8, 19, 4, 4); pixel('#162c42', 14, 19, 4, 4);
+        if (staff === 5) {
+            // Stage costume inspired by the Village People performer.
+            pixel('#a66b44', 9, 7, 7, 5);
+            pixel('#30251f', 7, 6, 2, 10); pixel('#30251f', 16, 6, 2, 10);
+            pixel('#d4a85f', 7, 5, 11, 2);
+            // Fan the stage-costume feathers around the crown.
+            for (var feather = 0; feather < 9; feather++) {
+                var angle = Math.PI + feather * Math.PI / 8;
+                pen.save();
+                pen.translate(12, 8);
+                pen.rotate(angle + Math.PI / 2);
+                pixel('#f5eee0', -1, -8, 2, 6);
+                pixel('#bf3940', -1, -8, 2, 2);
+                pixel('#cdbd9b', 0, -6, 1, 4);
+                pen.restore();
+            }
+            pixel('#d4a85f', 7, 6, 11, 2);
+            pixel('#a66b44', 7, 12, 11, 7);
+            pixel('#f0dca4', 8, 12, 2, 7); pixel('#f0dca4', 15, 12, 2, 7);
+            pixel('#a66b44', 3, 9, 4, 5); pixel('#a66b44', 18, 10, 4, 4);
+            pixel('#b68949', 8, 19, 4, 4); pixel('#b68949', 14, 19, 4, 4);
+            pixel('#f0dca4', 7, 19, 1, 4); pixel('#f0dca4', 18, 19, 1, 4);
+        } else if (staff === 4) {
+            pixel('#ac7b42', 8, 2, 9, 4); pixel('#d1a36b', 4, 5, 18, 2);
+            pixel('#f6e5b8', 12, 12, 2, 7); pixel('#523a25', 8, 17, 9, 2);
+            pixel('#d4ad79', 6, 4, 15, 2); pixel('#67402a', 9, 10, 6, 1);
+            pixel('#d5b26f', 11, 17, 3, 2);
+            pixel('#477ca4', 8, 19, 4, 3); pixel('#477ca4', 14, 19, 4, 3);
+            pixel('#6d452c', 7, 22, 5, 2); pixel('#6d452c', 14, 22, 5, 2);
+        } else if (staff === 3) {
+            pixel('#17344f', 7, 3, 11, 3); pixel('#101c30', 6, 6, 14, 1);
+            pixel('#111820', 9, 8, 7, 2); pixel('#58351f', 10, 11, 5, 1);
+            pixel('#e6c85a', 12, 4, 2, 2); pixel('#e6c85a', 14, 13, 2, 2); pixel('#101c30', 8, 18, 9, 1);
+        } else if (staff === 2) {
+            pixel('#f4d647', 8, 3, 9, 3); pixel('#f4d647', 6, 6, 14, 2);
+            pixel(skin, 8, 12, 9, 6); pixel('#f1c331', 7, 12, 2, 7);
+            pixel('#f1c331', 16, 12, 2, 7);
+            pixel('#d9a921', 12, 3, 2, 4); pixel('#65412b', 10, 11, 5, 1);
+            pixel('#477ca4', 8, 18, 4, 5); pixel('#477ca4', 14, 18, 4, 5);
+            pixel('#67482c', 7, 22, 5, 2); pixel('#67482c', 14, 22, 5, 2);
+        } else if (staff === 1) {
+            pixel('#242127', 7, 4, 11, 3); pixel('#48414b', 7, 4, 3, 2);
+            pixel('#111820', 9, 8, 7, 2); pixel(skin, 11, 12, 4, 7);
+            pixel('#252126', 8, 10, 2, 3); pixel('#252126', 15, 10, 2, 3);
+            pixel('#42302a', 10, 11, 5, 1); pixel('#c5c8ca', 9, 14, 1, 3);
+            pixel('#aeb8bd', 8, 17, 2, 2); pixel('#aeb8bd', 16, 17, 2, 2);
+        } else {
+            pixel('#53693e', 8, 3, 10, 4); pixel('#34492c', 6, 6, 14, 1);
+            pixel('#a6b47e', 8, 13, 3, 2); pixel('#34492c', 14, 16, 3, 2);
+            pixel('#293b25', 8, 19, 4, 4); pixel('#293b25', 14, 19, 4, 4);
+            pixel('#a6ad72', 9, 3, 3, 2); pixel('#35492c', 14, 4, 3, 2);
+            pixel('#b8ad7a', 11, 12, 3, 2); pixel('#34462b', 7, 15, 4, 2);
+            pixel('#89965c', 14, 14, 3, 2); pixel('#b8ad7a', 12, 17, 3, 2);
+            pixel('#34462b', 17, 17, 1, 2); pixel('#89965c', 3, 10, 3, 2);
+            pixel('#b8ad7a', 19, 11, 2, 2);
+            pixel('#89965c', 8, 20, 2, 2); pixel('#b8ad7a', 14, 19, 3, 2);
+            pixel('#17281e', 10, 22, 2, 1); pixel('#89965c', 16, 22, 2, 1);
+        }
+        if (staff >= 1 && staff <= 4) {
+            // Replace the generic raised arms with the four YMCA dance poses.
+            pen.clearRect(0, 7, 7, 12);
+            pen.clearRect(18, 7, 6, 12);
+            var poses = {
+                4: [[[8, 13], [5, 9], [2, 2]], [[17, 13], [20, 9], [22, 2]]],
+                3: [[[8, 13], [3, 7], [4, 1], [11, 5]], [[17, 13], [22, 7], [21, 1], [13, 5]]],
+                2: [[[8, 13], [5, 6], [10, 2], [18, 1]], [[17, 13], [20, 15], [22, 15]]],
+                1: [[[8, 13], [7, 7], [12, 1]], [[17, 13], [18, 7], [13, 1]]]
+            };
+            poses[staff].forEach(function (arm) {
+                pen.strokeStyle = staff === 2 || staff === 1 ? skin : shirt;
+                pen.lineWidth = 3;
+                pen.lineCap = 'square';
+                pen.lineJoin = 'miter';
+                pen.beginPath();
+                pen.moveTo(arm[0][0], arm[0][1]);
+                for (var joint = 1; joint < arm.length; joint++) pen.lineTo(arm[joint][0], arm[joint][1]);
+                pen.stroke();
+                var hand = arm[arm.length - 1];
+                pixel(skin, hand[0] - 1, hand[1] - 1, 3, 3);
+            });
+        }
+        html += '<img class="pride-employee" alt="" src="' + person.toDataURL() +
+            '" style="left:' + ((staffIndex * 96 + 35) / 576 * 100) + '%;animation-delay:-' + staff * 0.13 + 's">';
+    }
+    html += trainLogos(6, 'pride-train-logo', 'TYMCAT') + '</div>';
+    for (var flake = 0; flake < 24; flake++)
+        html += '<span class="pride-confetti" style="left:' + (flake * 37 % 100) +
+            '%;background:' + prideColors[flake % 6] + ';animation-delay:' + flake % 5 * 0.08 + 's"></span>';
+    scene.innerHTML = html;
+    document.body.appendChild(scene);
+}
+buildPrideScene();
+function updatePrideConfetti() {
+    var keys = predictions.filter(function (prediction) {
+        return prediction.route === 'Green-E' && prediction.dir === 0 &&
+            reachClass(prediction.when, TRAIN.walk, TRAIN.jog) === 'reachable-walk';
+    }).map(function (prediction) { return String(prediction.timestamp); });
+    var newWalkable = keys.some(function (key) { return walkableTrainKeys.indexOf(key) === -1; });
+    walkableTrainKeys = keys;
+    if (!discoMode || departuresStale || !newWalkable) return;
+    var scene = $('pride-scene');
+    scene.classList.remove('pride-burst');
+    void scene.offsetWidth;
+    scene.classList.add('pride-burst');
+    clearTimeout(prideBurstTimer);
+    prideBurstTimer = setTimeout(function () { scene.classList.remove('pride-burst'); }, 3600);
+}
+function setTrainSpeed(train, width) {
+    // Each pass covers the viewport plus the full train at 60 CSS pixels per second.
+    var duration = (window.innerWidth + width) / 60 + 's';
+    train.style.animationDuration = duration;
+    train.style.webkitAnimationDuration = duration;
+}
+function positionPrideScene() {
+    var footer = $('groups').querySelector('.arrivals-footer');
+    if (!footer) return;
+    var train = document.querySelector('.pride-train');
+    var box = footer.getBoundingClientRect();
+    var scale = Math.max(0, box.height - 6) / 20;
+    train.style.height = (44 * scale) + 'px';
+    train.style.width = (576 * scale) + 'px';
+    setTrainSpeed(train, 576 * scale);
+    train.style.top = (box.top + 3 - 21 * scale) + 'px';
+}
+
+var systemMap = {
+    routes: 'Red,Orange,Blue,Green-B,Green-C,Green-D,Green-E,Mattapan,741,742,743,746,749,751',
+    shapes: [], stops: [], vehicles: [], loaded: false, busy: false,
+    retry: 0, updated: 0, timer: null, zoom: 1, panX: 0, panY: 0, hits: [], selected: '',
+    bounds: null, hold: null, suppressClick: false
+};
+function decodeMapPolyline(encoded) {
+    var points = [], index = 0, lat = 0, lon = 0;
+    while (index < encoded.length) {
+        var coordinates = [];
+        for (var axis = 0; axis < 2; axis++) {
+            var result = 0, shift = 0, byte;
+            do {
+                if (index >= encoded.length || shift > 30) throw new Error('Invalid route geometry');
+                byte = encoded.charCodeAt(index++) - 63;
+                result |= (byte & 31) << shift;
+                shift += 5;
+            } while (byte >= 32);
+            coordinates.push(result & 1 ? ~(result >> 1) : result >> 1);
+        }
+        lat += coordinates[0]; lon += coordinates[1];
+        points.push([lon / 100000, lat / 100000]);
+    }
+    return points;
+}
+function mapRouteColor(route) {
+    if (['741', '742', '743', '746', '749', '751'].indexOf(route) !== -1) return '#8797a5';
+    return route === 'Mattapan' ? '#b22e48' : lineColor(route.split('-')[0]);
+}
+function nearestMapSegment(lon, lat, route) {
+    var best = null, distance = Infinity;
+    var aspect = Math.cos(lat * Math.PI / 180);
+    systemMap.shapes.forEach(function (shape) {
+        if (route && shape.route !== route) return;
+        for (var i = 1; i < shape.points.length; i++) {
+            var start = shape.points[i - 1], end = shape.points[i];
+            var dx = (end[0] - start[0]) * aspect, dy = end[1] - start[1];
+            var length = dx * dx + dy * dy;
+            if (!length) continue;
+            var t = Math.max(0, Math.min(1, ((lon - start[0]) * aspect * dx + (lat - start[1]) * dy) / length));
+            var x = start[0] + t * (end[0] - start[0]), y = start[1] + t * dy;
+            var d = Math.pow((lon - x) * aspect, 2) + Math.pow(lat - y, 2);
+            if (d < distance) {
+                distance = d;
+                best = { lon: x, lat: y, route: shape.route, bearing: (Math.atan2(dx, dy) * 180 / Math.PI + 360) % 360 };
+            }
+        }
+    });
+    return best;
+}
+function layoutSystemMap() {
+    if ($('system-map').hidden) return;
+    var popup = $('system-map');
+    popup.style.top = '1vh';
+    popup.style.left = '1vw';
+    popup.style.width = '98vw';
+    popup.style.height = '98vh';
+}
+function prepareMapBounds() {
+    // Fit the transit network inside a larger, fixed river-bounded navigation area.
+    systemMap.limits = { west: -71.37, east: -70.88282, south: 42.16250, north: 42.46157 };
+    systemMap.bounds = { west: -71.258685, east: -70.985648, south: 42.2018543, north: 42.44268 };
+}
+function mapMercator(lat) {
+    return Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) * 180 / Math.PI;
+}
+// Lightweight, deliberately simplified Boston geography. All coordinates are
+// longitude/latitude and share the transit layer's projection and gestures.
+function drawMapWater(ctx, project, dark) {
+    var water = dark ? '#203f50' : winterMode ? '#b8dfee' : '#c9e2ec';
+    var land = dark ? '#14212c' : winterMode ? '#edf6fc' : '#f4f7fa';
+    function polygon(points, color) {
+        ctx.beginPath();
+        points.forEach(function (point, index) {
+            var at = project(point[0], point[1]);
+            if (index) ctx.lineTo(at[0], at[1]); else ctx.moveTo(at[0], at[1]);
+        });
+        ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+    }
+    function river(points, metres) {
+        var origin = project(-71.1, 42.35), east = project(-71.1 + metres / 82300, 42.35);
+        ctx.strokeStyle = water; ctx.lineWidth = Math.max(1, Math.abs(east[0] - origin[0]));
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath();
+        points.forEach(function (point, index) {
+            var at = project(point[0], point[1]);
+            if (index) ctx.lineTo(at[0], at[1]); else ctx.moveTo(at[0], at[1]);
+        });
+        ctx.stroke();
+    }
+    // Mainland shoreline from Lynn through Boston Harbor to the South Shore.
+    polygon([
+        [-70.928,42.462],[-70.946,42.450],[-70.955,42.434],[-70.967,42.424],
+        [-70.981,42.421],[-70.989,42.409],[-70.990,42.393],[-70.988,42.380],
+        [-70.978,42.366],[-70.989,42.359],[-71.003,42.361],[-71.015,42.366],
+        [-71.022,42.373],[-71.035,42.382],[-71.047,42.388],[-71.055,42.392],
+        [-71.061,42.386],[-71.055,42.377],[-71.047,42.373],[-71.041,42.366],
+        [-71.033,42.361],[-71.025,42.365],[-71.016,42.359],[-71.012,42.351],
+        [-71.021,42.345],[-71.035,42.347],[-71.044,42.355],[-71.050,42.363],
+        [-71.058,42.367],[-71.062,42.361],[-71.052,42.356],[-71.048,42.348],
+        [-71.041,42.348],[-71.040,42.354],[-71.032,42.352],[-71.028,42.346],
+        [-71.033,42.340],[-71.041,42.337],[-71.035,42.329],[-71.043,42.321],
+        [-71.051,42.314],[-71.052,42.305],[-71.042,42.300],[-71.033,42.307],
+        [-71.021,42.310],[-71.019,42.296],[-71.010,42.284],[-70.998,42.278],
+        [-70.985,42.284],[-70.967,42.288],[-70.954,42.281],[-70.944,42.268],
+        [-70.932,42.256],[-70.920,42.246],[-70.903,42.242],[-70.880,42.235],
+        [-70.855,42.220],[-70.830,42.200],[-70.800,42.150],[-70.65,42.10],
+        [-70.65,42.60],[-70.928,42.60]
+    ], water);
+    // Harbor peninsulas and islands are simplified silhouettes.
+    [
+        [[-70.974,42.430],[-70.949,42.430],[-70.927,42.421],[-70.924,42.414],[-70.942,42.415],[-70.962,42.423]],
+        [[-70.999,42.339],[-70.979,42.340],[-70.963,42.329],[-70.965,42.316],[-70.982,42.314],[-70.997,42.324]],
+        [[-70.960,42.313],[-70.943,42.316],[-70.934,42.309],[-70.944,42.302],[-70.958,42.306]],
+        [[-70.931,42.327],[-70.920,42.330],[-70.914,42.324],[-70.923,42.319]],
+        [[-71.008,42.300],[-70.997,42.301],[-70.988,42.293],[-70.997,42.287]]
+    ].forEach(function (island) { polygon(island, land); });
+    // Charles River begins at Motley Pond, then winds through Newton/Watertown.
+    river([
+        [-71.1872,42.2567],[-71.195,42.263],[-71.208,42.264],[-71.219,42.270],
+        [-71.234,42.275],[-71.246,42.285],[-71.252,42.298],[-71.246,42.309],
+        [-71.234,42.318],[-71.232,42.326],[-71.245,42.335],[-71.258,42.346],
+        [-71.263,42.359],[-71.250,42.368],[-71.237,42.370],[-71.221,42.367],
+        [-71.210,42.361],[-71.194,42.362],[-71.180,42.366],[-71.166,42.365],
+        [-71.153,42.359],[-71.139,42.353],[-71.126,42.352],[-71.116,42.357]
+    ], 65);
+    river([[-71.116,42.357],[-71.107,42.363],[-71.095,42.368],[-71.084,42.368],
+        [-71.073,42.365],[-71.063,42.368],[-71.058,42.367]], 220);
+    // Mystic and Chelsea Rivers, and the lower Neponset.
+    river([[-71.103,42.415],[-71.096,42.408],[-71.090,42.402],[-71.077,42.400],
+        [-71.066,42.394],[-71.056,42.391],[-71.050,42.382],[-71.047,42.373]], 130);
+    river([[-71.038,42.399],[-71.030,42.395],[-71.024,42.391],[-71.020,42.384],[-71.022,42.373]], 85);
+    river([[-71.101,42.260],[-71.086,42.268],[-71.073,42.271],[-71.067,42.278],
+        [-71.054,42.280],[-71.046,42.288],[-71.041,42.299]], 85);
+    // Selected ponds near rapid transit, all east of Crystal Lake.
+    polygon([[-71.204,42.326],[-71.201,42.329],[-71.197,42.328],[-71.197,42.324],[-71.201,42.323]], water);
+    polygon([[-71.121,42.322],[-71.117,42.323],[-71.113,42.320],[-71.114,42.317],[-71.118,42.316],[-71.121,42.319]], water);
+    polygon([[-71.157,42.402],[-71.153,42.404],[-71.149,42.402],[-71.151,42.398],[-71.155,42.398]], water);
+    polygon([[-71.159,42.338],[-71.155,42.339],[-71.152,42.337],[-71.154,42.334],[-71.158,42.335]], water);
+}
+function drawSystemMap() {
+    if ($('system-map').hidden) return;
+    layoutSystemMap();
+    var canvas = $('system-map-canvas'), box = canvas.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+    var ratio = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(box.width * ratio); canvas.height = Math.round(box.height * ratio);
+    var ctx = canvas.getContext('2d');
+    ctx.scale(ratio, ratio);
+    var dark = document.documentElement.classList.contains('dark');
+    ctx.fillStyle = dark ? '#14212c' : winterMode ? '#edf6fc' : '#f4f7fa';
+    canvas.parentNode.style.background = ctx.fillStyle;
+    ctx.fillRect(0, 0, box.width, box.height);
+    if (!systemMap.bounds) return;
+    var bounds = systemMap.bounds;
+    var north = mapMercator(bounds.north), south = mapMercator(bounds.south);
+    var centerLon = (bounds.west + bounds.east) / 2, centerY = (north + south) / 2;
+    var limits = systemMap.limits || bounds;
+    var limitNorth = mapMercator(limits.north), limitSouth = mapMercator(limits.south);
+    var fitScale = Math.min((box.width - 50) / (bounds.east - bounds.west),
+        (box.height - 50) / (north - south));
+    var scale = fitScale * systemMap.zoom;
+    // Fit must contain the entire network. Widen the permitted region to cover
+    // the screen at Fit, instead of increasing zoom to enforce a narrow rectangle.
+    var fitHalfWidth = box.width / (2 * fitScale);
+    var fitHalfHeight = box.height / (2 * fitScale);
+    var allowedWest = Math.min(limits.west, centerLon - fitHalfWidth);
+    var allowedEast = Math.max(limits.east, centerLon + fitHalfWidth);
+    var allowedNorth = Math.max(limitNorth, centerY + fitHalfHeight);
+    var allowedSouth = Math.min(limitSouth, centerY - fitHalfHeight);
+    var minPanX = box.width / 2 - (allowedEast - centerLon) * scale;
+    var maxPanX = -box.width / 2 + (centerLon - allowedWest) * scale;
+    var minPanY = box.height / 2 - (centerY - allowedSouth) * scale;
+    var maxPanY = -box.height / 2 + (allowedNorth - centerY) * scale;
+    systemMap.panX = Math.max(minPanX, Math.min(maxPanX, systemMap.panX));
+    systemMap.panY = Math.max(minPanY, Math.min(maxPanY, systemMap.panY));
+    function project(lon, lat) {
+        return [box.width / 2 + systemMap.panX + (lon - centerLon) * scale,
+            box.height / 2 + systemMap.panY - (mapMercator(lat) - centerY) * scale];
+    }
+    drawMapWater(ctx, project, dark);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.globalAlpha = .65;
+    systemMap.shapes.forEach(function (shape) {
+        ctx.strokeStyle = mapRouteColor(shape.route); ctx.lineWidth = 3;
+        ctx.beginPath();
+        shape.points.forEach(function (point, index) {
+            var xy = project(point[0], point[1]);
+            if (index) ctx.lineTo(xy[0], xy[1]); else ctx.moveTo(xy[0], xy[1]);
+        });
+        ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+    var critical = /^(Magoun Square|Harvard|Park Street|Downtown Crossing|Government Center|State|North Station|South Station|Back Bay|Haymarket|Kenmore|Airport)( Station)?$/i;
+    var stationDots = [], labels = [];
+    var stations = systemMap.stops.slice().sort(function (left, right) {
+        return Number(!!right.terminus || critical.test(right.name)) - Number(!!left.terminus || critical.test(left.name));
+    });
+    ctx.font = '11px Arial';
+    stations.forEach(function (stop) {
+        var location = stop.mapPosition || { lon: stop.longitude, lat: stop.latitude };
+        var at = project(location.lon, location.lat);
+        if (at[0] < 0 || at[0] > box.width || at[1] < 0 || at[1] > box.height) return;
+        var major = !!stop.terminus || critical.test(stop.name);
+        if (!major && stationDots.some(function (point) {
+            return Math.abs(point[0] - at[0]) < 7 && Math.abs(point[1] - at[1]) < 7;
+        })) return;
+        stationDots.push(at);
+        ctx.beginPath(); ctx.arc(at[0], at[1], major ? 3 : 1.8, 0, Math.PI * 2);
+        ctx.fillStyle = dark ? '#dce8f1' : '#fff'; ctx.fill();
+        ctx.strokeStyle = dark ? '#738b9e' : '#667e90'; ctx.lineWidth = 1; ctx.stroke();
+        if (!major && systemMap.zoom < 1.8) return;
+        var silverOnly = stop.mapPosition && ['741', '742', '743', '746', '749', '751'].indexOf(stop.mapPosition.route) !== -1;
+        if (silverOnly && !/^(Chelsea|Nubian)$/.test(stop.name) && !critical.test(stop.name) && systemMap.zoom < 4) return;
+        var width = ctx.measureText(stop.name).width;
+        var candidates = [[at[0] + 6, at[1] - 15], [at[0] + 6, at[1] + 3],
+            [at[0] - width - 6, at[1] - 15], [at[0] - width - 6, at[1] + 3]];
+        for (var index = 0; index < candidates.length; index++) {
+            var label = { x: candidates[index][0], y: candidates[index][1], width: width + 6, height: 16 };
+            if (label.x < 0 || label.y < 0 || label.x + label.width > box.width || label.y + label.height > box.height) continue;
+            if (labels.some(function (other) {
+                return label.x < other.x + other.width && label.x + label.width > other.x &&
+                    label.y < other.y + other.height && label.y + label.height > other.y;
+            })) continue;
+            labels.push(label);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = dark ? '#14212c' : '#f4f7fa';
+            ctx.strokeText(stop.name, label.x + 2, label.y + 12);
+            ctx.fillStyle = dark ? '#e9f1f7' : '#243e52';
+            ctx.fillText(stop.name, label.x + 2, label.y + 12);
+            break;
+        }
+    });
+    systemMap.hits = [];
+    systemMap.vehicles.forEach(function (vehicle) {
+        var a = vehicle.attributes || {}, route = vehicle.relationships.route.data.id;
+        if (systemMap.zoom < 4 && ['741', '742', '743', '746', '749', '751'].indexOf(route) !== -1) return;
+        if (!Number.isFinite(a.latitude) || !Number.isFinite(a.longitude)) return;
+        var location = nearestMapSegment(a.longitude, a.latitude, route);
+        var at = project(location ? location.lon : a.longitude, location ? location.lat : a.latitude);
+        var heading = a.bearing;
+        if (location && Number.isFinite(heading)) {
+            var delta = Math.abs(((heading - location.bearing + 540) % 360) - 180);
+            heading = (location.bearing + (delta > 90 ? 180 : 0)) % 360;
+        }
+        var age = Date.now() - Date.parse(a.updated_at);
+        ctx.globalAlpha = age > 180000 ? .45 : 1;
+        // A continuous pointed halo encodes bearing without a detached arrow.
+        ctx.save();
+        ctx.translate(at[0], at[1]);
+        if (Number.isFinite(heading)) ctx.rotate(heading * Math.PI / 180);
+        ctx.beginPath();
+        if (Number.isFinite(heading)) {
+            ctx.moveTo(0, -12);
+            ctx.bezierCurveTo(1.5, -12, 2.5, -7, 4.5, -5);
+            ctx.bezierCurveTo(9, -1.5, 8, 8, 0, 8);
+            ctx.bezierCurveTo(-8, 8, -9, -1.5, -4.5, -5);
+            ctx.bezierCurveTo(-2.5, -7, -1.5, -12, 0, -12);
+            ctx.closePath();
+        } else ctx.arc(0, 0, 7, 0, Math.PI * 2);
+        ctx.fillStyle = dark ? '#f5f1df' : '#182c40';
+        ctx.fill();
+        ctx.strokeStyle = dark ? '#172838' : '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = mapRouteColor(route); ctx.fill();
+        ctx.restore();
+        systemMap.hits.push({ x: at[0], y: at[1], id: vehicle.id, route: route, attributes: a });
+    });
+    ctx.globalAlpha = 1;
+}
+function loadMapGeometry() {
+    if (systemMap.loaded) return Promise.resolve();
+    return Promise.all([
+        get('/route_patterns?' + mbtaQuery({ 'filter[route]': systemMap.routes, include: 'representative_trip.shape', 'page[limit]': 1000 })),
+        get('/stops?' + mbtaQuery({ 'filter[route]': systemMap.routes, 'page[limit]': 500 }))
+    ]).then(function (results) {
+        var included = Object.create(null), seen = Object.create(null);
+        (results[0].included || []).forEach(function (item) { included[item.type + ':' + item.id] = item; });
+        systemMap.shapes = [];
+        results[0].data.forEach(function (pattern) {
+            var tripRef = pattern.relationships.representative_trip.data;
+            var trip = tripRef && included['trip:' + tripRef.id];
+            var shapeRef = trip && trip.relationships.shape.data;
+            var shape = shapeRef && included['shape:' + shapeRef.id];
+            var route = pattern.relationships.route.data.id;
+            if (!shape || seen[route + ':' + shape.id]) return;
+            seen[route + ':' + shape.id] = true;
+            systemMap.shapes.push({ route: route, points: decodeMapPolyline(shape.attributes.polyline) });
+        });
+        if (!systemMap.shapes.length) throw new Error('Route geometry unavailable');
+        var stationIds = Object.create(null);
+        systemMap.stops = results[1].data.filter(function (stop) {
+            var parent = stop.relationships && stop.relationships.parent_station && stop.relationships.parent_station.data;
+            var id = parent ? parent.id : stop.id;
+            if (stationIds[id]) return false;
+            stationIds[id] = true;
+            return true;
+        }).map(function (stop) { return stop.attributes; });
+        systemMap.stops.forEach(function (stop) {
+            stop.mapPosition = nearestMapSegment(stop.longitude, stop.latitude);
+        });
+        var termini = /^(Alewife|Ashmont|Braintree|Oak Grove|Forest Hills|Wonderland|Bowdoin|Riverside|Heath Street|Medford\/Tufts|Union Square|Boston College|Cleveland Circle|Mattapan|Chelsea|Nubian|Silver Line Way|Terminal A|Terminal B Stop 1 - Arrivals Level|Terminal C - Arrivals Level|Terminal E - Arrivals Level|23 Drydock Ave)( Station)?$/i;
+        systemMap.stops.forEach(function (stop) { stop.terminus = termini.test(stop.name); });
+        prepareMapBounds();
+        systemMap.loaded = true;
+        drawSystemMap();
+    });
+}
+function refreshSystemMap() {
+    if ($('system-map').hidden || document.hidden || systemMap.busy || Date.now() < systemMap.retry) return;
+    systemMap.busy = true;
+    loadMapGeometry().then(function () {
+        return get('/vehicles?' + mbtaQuery({ 'filter[route]': systemMap.routes, 'page[limit]': 1000 }));
+    }).then(function (result) {
+        systemMap.vehicles = result.data || [];
+        systemMap.updated = Date.now();
+        systemMap.retry = 0;
+        $('map-status').textContent = systemMap.vehicles.length + ' vehicles reported · Updated ' +
+            snapshotTime(systemMap.updated) + ' · Refreshes every 30s';
+        drawSystemMap();
+    }).catch(function (error) {
+        systemMap.retry = Date.now() + (error.status === 429 ? 120000 : 30000);
+        $('map-status').textContent = systemMap.updated ? 'Showing last reported positions · Last updated ' +
+            snapshotTime(systemMap.updated) + ' · Retrying automatically' : 'Map updates temporarily unavailable · Retrying automatically';
+    }).then(function () { systemMap.busy = false; });
+}
+var mapLogo = document.querySelector('main > header .t-roundel');
+mapLogo.setAttribute('tabindex', '0');
+mapLogo.setAttribute('aria-label', 'T logo. Hold to open live subway map');
+function openSystemMap() {
+    systemMap.zoom = 1;
+    systemMap.panX = 0;
+    systemMap.panY = 0;
+    $('system-map').hidden = false;
+    document.body.style.overflow = 'hidden';
+    drawSystemMap();
+    refreshSystemMap();
+    clearInterval(systemMap.timer);
+    systemMap.timer = setInterval(refreshSystemMap, 30000);
+    $('map-close').focus();
+}
+function closeSystemMap() {
+    $('system-map').hidden = true;
+    clearInterval(systemMap.timer);
+    document.body.style.overflow = '';
+    mapLogo.focus();
+}
+function cancelMapHold() { clearTimeout(systemMap.hold); }
+function beginMapHold(event) {
+    if (event.type === 'mousedown' && event.button !== 0) return;
+    cancelMapHold();
+    systemMap.hold = setTimeout(openSystemMap, 1200);
+}
+mapLogo.addEventListener('touchstart', beginMapHold, false);
+mapLogo.addEventListener('mousedown', beginMapHold);
+['touchend', 'touchmove', 'touchcancel', 'mouseup', 'mouseleave'].forEach(function (name) {
+    mapLogo.addEventListener(name, cancelMapHold);
+});
+mapLogo.addEventListener('contextmenu', function (event) { event.preventDefault(); });
+mapLogo.addEventListener('keydown', function (event) {
+    if (event.keyCode === 13 || event.keyCode === 32) { event.preventDefault(); openSystemMap(); }
+});
+$('map-close').addEventListener('click', closeSystemMap);
+function zoomSystemMap(factor) { systemMap.zoom = Math.max(1, Math.min(8, systemMap.zoom * factor)); drawSystemMap(); }
+$('map-plus').addEventListener('click', function () { zoomSystemMap(1.4); });
+$('map-minus').addEventListener('click', function () { zoomSystemMap(1 / 1.4); });
+$('map-reset').addEventListener('click', function () { systemMap.zoom = 1; systemMap.panX = 0; systemMap.panY = 0; drawSystemMap(); });
+var mapDrag = null;
+function mapPoint(event) { var touch = event.touches ? event.touches[0] : event; return { x: touch.clientX, y: touch.clientY }; }
+function startMapDrag(event) {
+    if (event.type === 'mousedown' && event.button !== 0) return;
+    var point = mapPoint(event);
+    mapDrag = { x: point.x, y: point.y, startX: point.x, startY: point.y, moved: false };
+    event.preventDefault();
+}
+function moveMapDrag(event) {
+    if (!mapDrag) return;
+    var point = mapPoint(event);
+    systemMap.panX += point.x - mapDrag.x; systemMap.panY += point.y - mapDrag.y;
+    if (Math.abs(point.x - mapDrag.startX) + Math.abs(point.y - mapDrag.startY) > 5) mapDrag.moved = true;
+    mapDrag.x = point.x; mapDrag.y = point.y;
+    event.preventDefault(); drawSystemMap();
+}
+function endMapDrag() {
+    if (!mapDrag) return;
+    if (!mapDrag.moved) {
+        var rect = $('system-map-canvas').getBoundingClientRect(), best = null, distance = 18;
+        systemMap.hits.forEach(function (hit) {
+            var d = Math.sqrt(Math.pow(hit.x - (mapDrag.x - rect.left), 2) + Math.pow(hit.y - (mapDrag.y - rect.top), 2));
+            if (d < distance) { distance = d; best = hit; }
+        });
+        if (best) $('map-status').textContent = ({'741':'SL1','742':'SL2','743':'SL3','746':'SLW','749':'SL5','751':'SL4'}[best.route] || best.route) + ' · Vehicle ' + (best.attributes.label || best.id) +
+            ' · ' + String(best.attributes.current_status || '').replace(/_/g, ' ').toLowerCase() +
+            ' · Position reported ' + snapshotTime(Date.parse(best.attributes.updated_at));
+    }
+    mapDrag = null;
+}
+var mapCanvas = $('system-map-canvas');
+mapCanvas.addEventListener('mousedown', startMapDrag);
+var mapPinch = null;
+function pinchPoints(touches) {
+    var dx = touches[1].clientX - touches[0].clientX;
+    var dy = touches[1].clientY - touches[0].clientY;
+    return { x: (touches[0].clientX + touches[1].clientX) / 2,
+        y: (touches[0].clientY + touches[1].clientY) / 2, distance: Math.sqrt(dx * dx + dy * dy) };
+}
+mapCanvas.addEventListener('touchstart', function (event) {
+    if (event.touches.length >= 2) {
+        mapPinch = pinchPoints(event.touches);
+        mapDrag = null;
+        event.preventDefault();
+    } else startMapDrag(event);
+}, { passive: false });
+mapCanvas.addEventListener('touchmove', function (event) {
+    if (event.touches.length >= 2) {
+        var next = pinchPoints(event.touches);
+        if (mapPinch && mapPinch.distance > 0) {
+            var rect = mapCanvas.getBoundingClientRect();
+            var previousZoom = systemMap.zoom;
+            var zoom = Math.max(1, Math.min(8, previousZoom * next.distance / mapPinch.distance));
+            var factor = zoom / previousZoom;
+            // Keep the point between the fingers fixed while zooming and panning.
+            systemMap.panX = next.x - rect.left - rect.width / 2 -
+                (mapPinch.x - rect.left - rect.width / 2 - systemMap.panX) * factor;
+            systemMap.panY = next.y - rect.top - rect.height / 2 -
+                (mapPinch.y - rect.top - rect.height / 2 - systemMap.panY) * factor;
+            systemMap.zoom = zoom;
+        }
+        mapPinch = next;
+        event.preventDefault();
+        drawSystemMap();
+    } else moveMapDrag(event);
+}, { passive: false });
+mapCanvas.addEventListener('touchend', function (event) {
+    if (mapPinch) {
+        mapPinch = event.touches.length >= 2 ? pinchPoints(event.touches) : null;
+        if (event.touches.length === 1) {
+            startMapDrag(event);
+            mapDrag.moved = true;
+        }
+    } else endMapDrag();
+}, { passive: false });
+mapCanvas.addEventListener('touchcancel', function () { mapDrag = null; mapPinch = null; });
+document.addEventListener('mousemove', moveMapDrag);
+document.addEventListener('mouseup', endMapDrag);
+document.addEventListener('keydown', function (event) {
+    if ($('system-map').hidden) return;
+    if (event.keyCode === 27) closeSystemMap();
+    if (event.keyCode === 9) {
+        var buttons = $('system-map').querySelectorAll('button');
+        if (event.shiftKey && document.activeElement === buttons[0]) { event.preventDefault(); buttons[buttons.length - 1].focus(); }
+        else if (!event.shiftKey && document.activeElement === buttons[buttons.length - 1]) { event.preventDefault(); buttons[0].focus(); }
+    }
+});
+window.addEventListener('resize', drawSystemMap);
+document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshSystemMap(); });
+var winterMode = false, winterHoldTimer = null, suppressSunClick = false;
+var sunButton = $('theme-light');
+var sunIcon = sunButton.innerHTML;
+function buildWinterScene() {
+    var scene = document.createElement('div');
+    scene.id = 'winter-scene';
+    scene.setAttribute('aria-hidden', 'true');
+    for (var i = 0; i < 72; i++) {
+        var flake = document.createElement('span');
+        flake.className = 'winter-flake';
+        flake.textContent = '❄';
+        flake.style.cssText = 'left:' + (i * 37 % 100) + '%;font-size:' + (16 + i % 4 * 5) +
+            'px;opacity:' + (0.65 + i % 4 * 0.1) + ';animation-duration:' + (12 + i % 9 * 2) +
+            's;animation-delay:-' + (i * 7 % 25) + 's;';
+        scene.appendChild(flake);
+    }
+    for (var j = 0; j < 22; j++) {
+        var ice = document.createElement('span');
+        ice.className = 'winter-icicle';
+        ice.style.left = j * 4.7 + '%';
+        ice.style.borderTopWidth = 28 + j * 17 % 40 + 'px';
+        scene.appendChild(ice);
+    }
+    // Draw the tiny Santa and Red Line train on a pixel grid.
+    var canvas = document.createElement('canvas');
+    canvas.width = 576; canvas.height = 44;
+    var ctx = canvas.getContext('2d');
+    function block(color, x, y, width, height) {
+        ctx.fillStyle = color; ctx.fillRect(x, y, width, height);
+    }
+    for (var car = 0; car < 6; car++) {
+        var offset = car * 96;
+        block('#e1e8ed', offset + 2, 23, 90, 17);
+        block('#c52632', offset + 2, 32, 90, 6);
+        block('#9caebb', offset + 5, 21, 84, 3);
+        for (var k = 0; k < 7; k++) block('#163e58', offset + 7 + k * 12, 25, 8, 6);
+        block('#18242f', offset + 14, 39, 6, 2);
+        block('#18242f', offset + 74, 39, 6, 2);
+        if (car < 5) block('#65727d', offset + 92, 34, 6, 3);
+    }
+    // The rightmost car leads. Santa rides the rear car.
+    block('#ffffff', 569, 29, 4, 3);
+    function reindeer(x, rudolph) {
+        block('#93613a', x + 2, 10, 15, 6);
+        block('#b58150', x + 14, 6, 7, 7);
+        block('#b58150', x + 19, 9, 6, 3);
+        block(rudolph ? '#ff293d' : '#342a24', x + 24, 9, 3, 3);
+        block('#231e1b', x + 18, 7, 1, 1);
+        block('#755035', x + 3, 16, 2, 5);
+        block('#755035', x + 13, 16, 2, 5);
+        block('#c5a47d', x + 15, 1, 2, 6);
+        block('#c5a47d', x + 11, 2, 5, 2);
+        block('#c5a47d', x + 19, 0, 2, 6);
+        block('#c5a47d', x + 20, 2, 4, 2);
+        block('#e4c16a', x + 14, 12, 3, 2);
+    }
+    for (var middleCar = 1; middleCar <= 4; middleCar++) {
+        reindeer(middleCar * 96 + 15, false);
+        reindeer(middleCar * 96 + 54, false);
+    }
+    reindeer(5 * 96 + 35, true);
+    // Sack sits behind Santa as the train travels right.
+    block('#91612f', 17, 13, 14, 9);
+    block('#ae7a40', 20, 10, 9, 3);
+    block('#cfaa63', 22, 8, 5, 3);
+    block('#6e4725', 22, 12, 6, 2);
+    block('#c52632', 34, 16, 17, 7);
+    block('#c52632', 38, 3, 11, 5); block('#c52632', 45, 1, 8, 3);
+    block('#ffffff', 51, 2, 3, 3); block('#ffffff', 36, 7, 15, 3);
+    block('#f2c3a0', 39, 10, 10, 5); block('#ffffff', 37, 13, 13, 5);
+    block('#18242f', 46, 11, 2, 2); block('#ffffff', 32, 20, 23, 3);
+    var train = document.createElement('div');
+    train.className = 'winter-train';
+    train.innerHTML = '<img class="winter-train-pixels" alt="" src="' + canvas.toDataURL() +
+        '">' + trainLogos(6, 'winter-train-logo');
+    scene.appendChild(train);
+    document.body.appendChild(scene);
+}
+buildWinterScene();
+function cancelWinterHold() { clearTimeout(winterHoldTimer); winterHoldTimer = null; }
+function beginWinterHold(event) {
+    if (event.type === 'mousedown' && event.button !== 0) return;
+    cancelWinterHold();
+    suppressSunClick = false;
+    winterHoldTimer = setTimeout(function () {
+        winterMode = !winterMode;
+        discoMode = false;
+        suppressSunClick = true;
+        updateTheme();
+    }, 1200);
+}
+sunButton.addEventListener('touchstart', beginWinterHold, false);
+sunButton.addEventListener('mousedown', beginWinterHold);
+['touchend', 'touchcancel', 'touchmove', 'mouseup', 'mouseleave'].forEach(function (name) {
+    sunButton.addEventListener(name, cancelWinterHold);
+});
+sunButton.addEventListener('contextmenu', function (event) { event.preventDefault(); });
+var discoStartedAt = 0;
+var discoMode = false, discoHoldTimer = null, suppressMoonClick = false;
+function cancelDiscoHold() {
+    clearTimeout(discoHoldTimer);
+    discoHoldTimer = null;
+}
+function beginDiscoHold(event) {
+    if (event.type === 'mousedown' && event.button !== 0) return;
+    cancelDiscoHold();
+    suppressMoonClick = false;
+    discoHoldTimer = setTimeout(function () {
+        discoMode = !discoMode;
+        winterMode = false;
+        if (discoMode) discoStartedAt = Date.now();
+        suppressMoonClick = true;
+        updateTheme();
+    }, 1200);
+}
+var moonButton = $('theme-dark');
+var moonIcon = moonButton.innerHTML;
+moonButton.addEventListener('touchstart', beginDiscoHold, false);
+moonButton.addEventListener('mousedown', beginDiscoHold);
+['touchend', 'touchcancel', 'touchmove', 'mouseup', 'mouseleave'].forEach(function (name) {
+    moonButton.addEventListener(name, cancelDiscoHold);
+});
+moonButton.addEventListener('contextmenu', function (event) { event.preventDefault(); });
 function chooseTheme(mode) {
+    winterMode = false;
+    discoMode = false;
     themeMode = mode;
-    try { localStorage.setItem('bartlit_theme', themeMode); } catch (error) {}
     updateTheme();
 }
-$('theme-light').addEventListener('click', function () { chooseTheme('light'); });
-$('theme-dark').addEventListener('click', function () { chooseTheme('dark'); });
+sunButton.addEventListener('click', function (event) {
+    if (suppressSunClick) { event.preventDefault(); suppressSunClick = false; return; }
+    chooseTheme('light');
+});
+$('theme-dark').addEventListener('click', function (event) {
+    if (suppressMoonClick) {
+        event.preventDefault();
+        suppressMoonClick = false;
+        return;
+    }
+    chooseTheme('dark');
+});
 $('theme-auto').addEventListener('click', function () { chooseTheme('auto'); });
 $('hard-refresh').addEventListener('click', function () {
     try { sessionStorage.setItem('bartlit_force_refresh', '1'); } catch (error) {}
@@ -854,12 +1771,52 @@ $('hard-refresh').addEventListener('click', function () {
 function updateTheme() {
     var now = new Date();
     var sun = solarDay(now);
-    var dark = themeMode === 'dark' || (themeMode === 'auto' && (now.getTime() < sun.sunrise || now.getTime() >= sun.sunset));
+    var dark = !winterMode && (discoMode || themeMode === 'dark' || (themeMode === 'auto' && (now.getTime() < sun.sunrise || now.getTime() >= sun.sunset)));
     document.documentElement.classList.toggle('dark', dark);
+    document.documentElement.classList.toggle('disco', discoMode);
+    document.documentElement.classList.toggle('winter', winterMode);
+    var iconMode = winterMode ? 'winter' : 'sun';
+    if (sunButton.getAttribute('data-icon') !== iconMode) {
+        sunButton.innerHTML = winterMode ? '<span aria-hidden="true" style="font-size:19px">❄</span>' : sunIcon;
+        sunButton.setAttribute('data-icon', iconMode);
+        sunButton.setAttribute('aria-label', winterMode ? 'Exit winter mode' : 'Light mode');
+    }
+    var moonMode = discoMode ? 'disco' : 'moon';
+    if (moonButton.getAttribute('data-icon') !== moonMode) {
+        moonButton.innerHTML = discoMode ? '<span class="disco-ball theme-disco-ball" aria-hidden="true"></span>' : moonIcon;
+        moonButton.setAttribute('data-icon', moonMode);
+        moonButton.setAttribute('aria-label', discoMode ? 'Exit Pride disco mode' : 'Dark mode');
+    }
+    syncDiscoHeaders();
+    drawSystemMap();
     $('theme-light').setAttribute('aria-pressed', String(themeMode === 'light'));
     $('theme-dark').setAttribute('aria-pressed', String(themeMode === 'dark'));
     $('theme-auto').setAttribute('aria-pressed', String(themeMode === 'auto'));
     document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#101820' : '#102e4b');
+}
+function syncDiscoHeaders() {
+    var headers = document.querySelectorAll('main > header, .arrivals-heading, .alert-heading');
+    var delay = discoMode ? '-' + ((Date.now() - discoStartedAt) % 24000) / 1000 + 's' : '';
+    for (var i = 0; i < headers.length; i++) {
+        var phase = discoMode ? String(discoStartedAt) : '';
+        if (headers[i].getAttribute('data-disco-phase') === phase) continue;
+        headers[i].setAttribute('data-disco-phase', phase);
+        headers[i].style.animationDelay = delay;
+        headers[i].style.webkitAnimationDelay = delay;
+    }
+}
+function positionWinterTrain() {
+    var footer = $('groups').querySelector('.arrivals-footer');
+    var train = document.querySelector('.winter-train');
+    if (!footer || !train) return;
+    var box = footer.getBoundingClientRect();
+    // Sprite roof starts at y=21 and the wheels end at y=41.
+    var scale = Math.max(0, box.height - 6) / 20;
+    train.style.height = (44 * scale) + 'px';
+    train.style.width = (576 * scale) + 'px';
+    setTrainSpeed(train, 576 * scale);
+    train.style.top = (box.top + 3 - 21 * scale) + 'px';
+
 }
 function alignFooters() {
     var departures = $('groups').querySelector('.arrivals-footer');
@@ -897,9 +1854,12 @@ function render() {
           '<span class="refresh-caption">Refreshed every 30s</span>' +
         '</div>' +
       '</section>' + upcomingPanel();
+    syncDiscoHeaders();
     $('groups').querySelector('.alert-list').scrollTop = alertScrollTop;
     alignCountdowns();
     alignFooters();
+    positionWinterTrain();
+    positionPrideScene();
     var s = $('status');
     if (departuresStale || setupError) {
         s.textContent = lastSuccess ? 'Last updated ' + snapshotTime(lastSuccess) + ' · Saved departures' : 'Live departures temporarily unavailable';
@@ -975,6 +1935,7 @@ function update() {
                     predictions = next;
                     lastSuccess = Date.now();
                     departuresStale = false;
+                    updatePrideConfetti();
                     saveSnapshot(departureKey, lastSuccess, predictions);
                     nextRetry = 0;
                     errorCount = 0;
@@ -1062,7 +2023,8 @@ document.addEventListener('keydown', function (event) {
     if (event.key === 'Tab' || event.keyCode === 9) event.preventDefault();
 });
 setInterval(render, 15000);
-window.addEventListener('resize', function () { alignCountdowns(); alignFooters(); });
+window.addEventListener('scroll', function () { positionWinterTrain(); positionPrideScene(); });
+window.addEventListener('resize', function () { alignCountdowns(); alignFooters(); positionWinterTrain(); positionPrideScene(); });
 setInterval(refreshDepartures, 30000);
 setInterval(updateAlerts, 30000);
 document.addEventListener('visibilitychange', function () { if (!document.hidden) {
